@@ -27,20 +27,20 @@ syn sync fromstart
 
 " KEYWORDS {{{
 " Core control flow and declarations
-syn keyword boxlangKeyword abort abstract as assert break case castas catch
+syn keyword boxlangKeyword abort as assert break case castas catch
 syn keyword boxlangKeyword continue default do does else
 syn keyword boxlangKeyword finally for function if import in include
-syn keyword boxlangKeyword interface new param package private property
-syn keyword boxlangKeyword public remote required rethrow return static
+syn keyword boxlangKeyword interface new param property
+syn keyword boxlangKeyword required rethrow return
 syn keyword boxlangKeyword switch throw to transaction try var when while
-syn keyword boxlangKeyword class final exit lock thread
+syn keyword boxlangKeyword exit lock thread
 
 " Keywords that conflict with vim syntax arguments (use match instead)
 syn match boxlangKeyword "\<contain\>"
 syn match boxlangKeyword "\<contains\>"
 
-" Modifiers and visibility
-syn keyword boxlangModifier public private remote package static abstract final
+" Modifiers and visibility (distinct from keywords)
+syn keyword boxlangModifier public private remote package static abstract final class
 
 " Types and special values
 syn keyword boxlangType any array binary boolean component date function

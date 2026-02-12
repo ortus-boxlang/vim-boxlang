@@ -1,0 +1,154 @@
+/**
+ * BoxLang Modifier and Visibility Test
+ * Tests that modifiers are highlighted distinctly from regular keywords
+ */
+
+// CLASS DECLARATIONS WITH MODIFIERS
+public class PublicClass {
+    // Visibility modifiers on properties
+    public property name = "Public property"
+    private property secret = "Private property"
+    remote property apiEndpoint = "Remote property"
+    package property internal = "Package-level property"
+    
+    // Static properties
+    public static property version = "1.0.0"
+    private static property instanceCount = 0
+    
+    // Final properties
+    public final property API_KEY = "abc123"
+    private final property MAX_RETRIES = 3
+    
+    // Abstract modifier (for abstract classes)
+    abstract function process()
+    
+    // Final methods
+    public final function getApiKey() {
+        return this.API_KEY
+    }
+    
+    // Public methods
+    public function publicMethod() {
+        variables.data = "public"
+    }
+    
+    // Private methods
+    private function privateHelper() {
+        variables.helper = "private"
+    }
+    
+    // Remote methods (web-accessible)
+    remote function remoteApi() {
+        return { "status": "ok" }
+    }
+    
+    // Package methods
+    package function packageLevel() {
+        variables.pkg = "package"
+    }
+    
+    // Static methods
+    public static function getInstance() {
+        return new PublicClass()
+    }
+    
+    // Combining modifiers
+    public static final function getVersion() {
+        return static.version
+    }
+}
+
+// ABSTRACT CLASS
+abstract class AbstractBase {
+    abstract function initialize()
+    abstract function destroy()
+    
+    // Concrete method in abstract class
+    public function concrete() {
+        return "implemented"
+    }
+}
+
+// PRIVATE CLASS (package-level visibility)
+private class PrivateClass {
+    private property data
+    
+    private function init() {
+        variables.data = "private class"
+    }
+}
+
+// FINAL CLASS (cannot be extended)
+final class FinalClass {
+    public function cannotExtend() {
+        return "This class is final"
+    }
+}
+
+// FUNCTION WITH MODIFIERS
+public function publicFunction() {
+    return "accessible everywhere"
+}
+
+private function privateFunction() {
+    return "only in this context"
+}
+
+remote function remoteFunction() {
+    return "web-accessible"
+}
+
+// STATIC CONTEXT
+class StaticExample {
+    static {
+        // Static initialization block
+        className = "StaticExample"
+        defaultTimeout = 30
+    }
+    
+    public static function getClassName() {
+        return static.className
+    }
+}
+
+// ALL MODIFIERS TOGETHER
+public abstract class AllModifiers {
+    public property publicProp
+    private property privateProp
+    remote property remoteProp
+    package property packageProp
+    static property staticProp
+    final property finalProp
+    
+    public abstract function abstractMethod()
+    public static function staticMethod() {}
+    public final function finalMethod() {}
+    private static final function privateStaticFinal() {}
+}
+
+// COMPARISON: Keywords vs Modifiers
+// Modifiers (should have distinct color - StorageClass):
+//   public, private, remote, package, static, abstract, final, class
+//
+// Regular keywords (should be blue/keyword color):
+//   if, for, while, return, try, catch, var, new, etc.
+
+class KeywordComparison {
+    public function demonstrateKeywords() {
+        // Regular keywords
+        if (true) {
+            for (var i = 1; i <= 10; i++) {
+                while (false) {
+                    break
+                }
+            }
+        }
+        
+        try {
+            var result = new Object()
+            return result
+        } catch (any e) {
+            rethrow
+        }
+    }
+}
