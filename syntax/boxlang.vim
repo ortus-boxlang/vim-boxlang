@@ -203,7 +203,7 @@ if b:boxlang_include_depth < 1
   syn include @boxlangTemplateIsland syntax/boxlang-template.vim
   unlet! b:current_syntax
   let b:boxlang_include_depth -= 1
-  
+
   syn region boxlangComponentIsland matchgroup=boxlangIslandDelim start="```" end="```" contains=@boxlangTemplateIsland keepend
 endif
 " / COMPONENT ISLANDS }}}

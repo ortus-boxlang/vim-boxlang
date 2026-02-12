@@ -43,7 +43,7 @@ syn keyword boxlangTodo contained TODO FIXME XXX NOTE HACK
 " Non-contained version for use anywhere in template (including HTML text)
 syn region boxlangExpression matchgroup=boxlangExpressionDelim start="#" end="#" skip="##" contains=boxlangIdentifier,boxlangNumber,boxlangOperator,boxlangFunction,boxlangScope,boxlangDot,boxlangKeyword,boxlangBoolean,boxlangNull
 
-" Escaped hash mark (appears as literal ##)  
+" Escaped hash mark (appears as literal ##)
 syn match boxlangEscapedHash "##"
 " / EXPRESSION INTERPOLATION }}}
 
@@ -131,7 +131,7 @@ if b:boxlang_include_depth < 1
   syn include @boxlangScript syntax/boxlang.vim
   unlet! b:current_syntax
   let b:boxlang_include_depth -= 1
-  
+
   syn region boxlangScriptBlock matchgroup=boxlangTagName start="<bx:script>" end="</bx:script>" contains=@boxlangScript,boxlangTemplateComment fold keepend
 endif
 " / SCRIPT BLOCKS }}}
