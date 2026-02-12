@@ -22,9 +22,12 @@ set cpo&vim
 " BoxLang templates are case-insensitive
 syn case ignore
 
-" Include HTML syntax for markup
+" Include HTML syntax for markup (but we'll override for BoxLang constructs)
 runtime! syntax/html.vim
-unlet b:current_syntax
+unlet! b:current_syntax
+
+" Set higher priority for BoxLang syntax
+syn cluster htmlTop add=boxlangTemplateComment,boxlangTagStart,boxlangTagEnd,boxlangExpression,boxlangScriptBlock
 
 " TEMPLATE COMMENTS {{{
 " BoxLang template comments: <!--- ... --->
@@ -35,11 +38,12 @@ syn keyword boxlangTodo contained TODO FIXME XXX NOTE HACK
 " / TEMPLATE COMMENTS }}}
 
 " EXPRESSION INTERPOLATION {{{
-" Hash-delimited expressions in template text
+" Hash-delimited expressions in template text and HTML content
 " Syntax: #expression#
-syn region boxlangExpression contained matchgroup=boxlangExpressionDelim start="#" end="#" skip="##" contains=boxlangIdentifier,boxlangNumber,boxlangOperator,boxlangFunction,boxlangScope,boxlangDot
+" Non-contained version for use anywhere in template (including HTML text)
+syn region boxlangExpression matchgroup=boxlangExpressionDelim start="#" end="#" skip="##" contains=boxlangIdentifier,boxlangNumber,boxlangOperator,boxlangFunction,boxlangScope,boxlangDot,boxlangKeyword,boxlangBoolean,boxlangNull
 
-" Escaped hash mark
+" Escaped hash mark (appears as literal ##)  
 syn match boxlangEscapedHash "##"
 " / EXPRESSION INTERPOLATION }}}
 
@@ -117,10 +121,19 @@ syn region boxlangTransactionRegion transparent fold start="<bx:transaction\>" e
 " SCRIPT BLOCKS {{{
 " <bx:script> embedded script content
 " Include BoxLang script syntax within <bx:script> tags
-syn include @boxlangScript syntax/boxlang.vim
-unlet b:current_syntax
+" Guard against infinite recursion when including script syntax
+if !exists("b:boxlang_include_depth")
+  let b:boxlang_include_depth = 0
+endif
 
-syn region boxlangScriptBlock matchgroup=boxlangTagName start="<bx:script>" end="</bx:script>" contains=@boxlangScript,boxlangTemplateComment fold keepend
+if b:boxlang_include_depth < 1
+  let b:boxlang_include_depth += 1
+  syn include @boxlangScript syntax/boxlang.vim
+  unlet! b:current_syntax
+  let b:boxlang_include_depth -= 1
+  
+  syn region boxlangScriptBlock matchgroup=boxlangTagName start="<bx:script>" end="</bx:script>" contains=@boxlangScript,boxlangTemplateComment fold keepend
+endif
 " / SCRIPT BLOCKS }}}
 
 " BASIC SYNTAX ELEMENTS FOR EXPRESSIONS {{{
@@ -139,10 +152,22 @@ syn match boxlangDot contained "\."
 
 " Keywords
 syn keyword boxlangKeyword contained and or not xor eq neq gt lt gte lte is
-syn keyword boxlangKeyword contained mod contains new
+syn keyword boxlangKeyword contained mod new
 
-" Scopes
-syn keyword boxlangScope contained variables arguments local request session application server cgi url form cookie client thread cfcatch super this
+" Keywords that conflict with vim syntax arguments
+syn match boxlangKeyword contained "\<contains\>"
+
+" Scopes (all BoxLang variable scopes)
+" Core function/class scopes
+syn keyword boxlangScope contained variables local arguments this static super
+" Persistence scopes
+syn keyword boxlangScope contained application session request server
+" Web-specific scopes
+syn keyword boxlangScope contained cgi form url cookie client
+" Thread scopes
+syn keyword boxlangScope contained thread bxThread
+" Special scopes
+syn keyword boxlangScope contained bxFile bxHttp attributes caller cfcatch
 
 " Function calls
 syn match boxlangFunction contained "\<\w\+\ze\s*("

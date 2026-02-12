@@ -28,12 +28,16 @@ syn sync fromstart
 " KEYWORDS {{{
 " Core control flow and declarations
 syn keyword boxlangKeyword abort abstract as assert break case castas catch
-syn keyword boxlangKeyword contain contains continue default do does else
+syn keyword boxlangKeyword continue default do does else
 syn keyword boxlangKeyword finally for function if import in include
 syn keyword boxlangKeyword interface new param package private property
 syn keyword boxlangKeyword public remote required rethrow return static
 syn keyword boxlangKeyword switch throw to transaction try var when while
 syn keyword boxlangKeyword class final exit lock thread
+
+" Keywords that conflict with vim syntax arguments (use match instead)
+syn match boxlangKeyword "\<contain\>"
+syn match boxlangKeyword "\<contains\>"
 
 " Modifiers and visibility
 syn keyword boxlangModifier public private remote package static abstract final
@@ -189,10 +193,19 @@ syn match boxlangAnnotationSimple "@\w\+"
 " COMPONENT ISLANDS {{{
 " Triple backtick template blocks embedded in script
 " Syntax: ```<template>...</template>```
-syn include @boxlangTemplateIsland syntax/boxlang-template.vim
-unlet b:current_syntax
+" Guard against infinite recursion when including template syntax
+if !exists("b:boxlang_include_depth")
+  let b:boxlang_include_depth = 0
+endif
 
-syn region boxlangComponentIsland matchgroup=boxlangIslandDelim start="```" end="```" contains=@boxlangTemplateIsland keepend
+if b:boxlang_include_depth < 1
+  let b:boxlang_include_depth += 1
+  syn include @boxlangTemplateIsland syntax/boxlang-template.vim
+  unlet! b:current_syntax
+  let b:boxlang_include_depth -= 1
+  
+  syn region boxlangComponentIsland matchgroup=boxlangIslandDelim start="```" end="```" contains=@boxlangTemplateIsland keepend
+endif
 " / COMPONENT ISLANDS }}}
 
 " BRACKETS AND BRACES {{{
@@ -213,7 +226,16 @@ syn match boxlangIdentifier "\<\w\+\>"
 " / IDENTIFIERS }}}
 
 " SCOPES {{{
-syn keyword boxlangScope variables arguments local request session application server cgi url form cookie client thread request cfcatch super this
+" Core function/class scopes
+syn keyword boxlangScope variables local arguments this static super
+" Persistence scopes
+syn keyword boxlangScope application session request server
+" Web-specific scopes
+syn keyword boxlangScope cgi form url cookie client
+" Thread scopes
+syn keyword boxlangScope thread bxThread
+" Special scopes
+syn keyword boxlangScope bxFile bxHttp attributes caller cfcatch
 " / SCOPES }}}
 
 " SPECIAL CONSTRUCTS {{{

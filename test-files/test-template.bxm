@@ -1,4 +1,4 @@
-<!--- 
+<!---
     BoxLang Template Test File
     Tests all template syntax highlighting features
 --->
@@ -90,15 +90,15 @@
     <p>Attempting risky operation...</p>
     <bx:set result = riskyFunction()>
     <p>Success: #result#</p>
-    
+
     <bx:catch type="database">
         <p class="error">Database error occurred</p>
     </bx:catch>
-    
+
     <bx:catch type="any">
         <p class="error">An error occurred: #cfcatch.message#</p>
     </bx:catch>
-    
+
     <bx:finally>
         <p>Cleanup completed</p>
     </bx:finally>
@@ -117,7 +117,7 @@
 <bx:function name="formatCurrency" returntype="string">
     <bx:argument name="amount" type="numeric" required="true">
     <bx:argument name="currency" type="string" default="USD">
-    
+
     <bx:return "#currency# #numberFormat(amount, '0.00')#">
 </bx:function>
 
@@ -129,17 +129,17 @@
     <bx:property name="id" type="numeric">
     <bx:property name="name" type="string">
     <bx:property name="email" type="string">
-    
+
     <bx:function name="init" access="public" returntype="User">
         <bx:argument name="id" type="numeric" required="true">
         <bx:argument name="name" type="string" required="true">
-        
+
         <bx:set this.id = arguments.id>
         <bx:set this.name = arguments.name>
-        
+
         <bx:return this>
     </bx:function>
-    
+
     <bx:function name="getDisplayName" access="public" returntype="string">
         <bx:return "#this.name# (ID: #this.id#)">
     </bx:function>
@@ -171,26 +171,26 @@
     function processData(array items) {
         // Arrow functions
         var doubled = items.map((x) => x * 2);
-        
+
         // Bitwise operators
         var flags = 5 b| 3;
-        
+
         // Strict equality
         if (flags === 7) {
             return doubled;
         }
-        
+
         return [];
     }
-    
+
     // Lambda function
     var filter = (item) -> {
         return item.active === true;
     };
-    
+
     // String interpolation in script
     var message = "Found #arrayLen(data)# items";
-    
+
     // Data structures
     var config = {
         enabled: true,
@@ -215,7 +215,7 @@
     <bx:if condition="#not isValid(data)#">
         <bx:throw message="Invalid data" type="ValidationException">
     </bx:if>
-    
+
     <bx:catch type="ValidationException">
         <p>Validation failed</p>
         <bx:rethrow>

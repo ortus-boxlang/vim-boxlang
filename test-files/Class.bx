@@ -284,10 +284,3 @@ class UserService {
         ```;
     }
 }
-
-// Interface definition
-interface IUserRepository {
-    public function findById(required numeric id);
-    public function save(required struct user);
-    public function delete(required numeric id);
-}
