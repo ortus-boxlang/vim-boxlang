@@ -15,7 +15,7 @@ mkdir -p ~/.vim/syntax ~/.vim/ftdetect
 
 # Create symlinks for live development
 ln -sf $PWD/syntax/boxlang.vim ~/.vim/syntax/
-ln -sf $PWD/syntax/boxlang-template.vim ~/.vim/syntax/
+ln -sf $PWD/syntax/boxlangTemplate.vim ~/.vim/syntax/
 ln -sf $PWD/ftdetect/boxlang.vim ~/.vim/ftdetect/
 ```
 
@@ -28,7 +28,7 @@ mkdir -p ~/.config/nvim/syntax ~/.config/nvim/ftdetect
 
 # Create symlinks for live development
 ln -sf $PWD/syntax/boxlang.vim ~/.config/nvim/syntax/
-ln -sf $PWD/syntax/boxlang-template.vim ~/.config/nvim/syntax/
+ln -sf $PWD/syntax/boxlangTemplate.vim ~/.config/nvim/syntax/
 ln -sf $PWD/ftdetect/boxlang.vim ~/.config/nvim/ftdetect/
 ```
 

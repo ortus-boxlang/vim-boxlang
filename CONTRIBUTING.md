@@ -82,7 +82,7 @@ Here's how to set up for development:
    ```bash
    mkdir -p ~/.vim/syntax ~/.vim/ftdetect
    ln -s $PWD/syntax/boxlang.vim ~/.vim/syntax/
-   ln -s $PWD/syntax/boxlang-template.vim ~/.vim/syntax/
+   ln -s $PWD/syntax/boxlangTemplate.vim ~/.vim/syntax/
    ln -s $PWD/ftdetect/boxlang.vim ~/.vim/ftdetect/
    ```
 
@@ -91,7 +91,7 @@ Here's how to set up for development:
    ```bash
    mkdir -p ~/.config/nvim/syntax ~/.config/nvim/ftdetect
    ln -s $PWD/syntax/boxlang.vim ~/.config/nvim/syntax/
-   ln -s $PWD/syntax/boxlang-template.vim ~/.config/nvim/syntax/
+   ln -s $PWD/syntax/boxlangTemplate.vim ~/.config/nvim/syntax/
    ln -s $PWD/ftdetect/boxlang.vim ~/.config/nvim/ftdetect/
    ```
 
@@ -151,7 +151,7 @@ When contributing to the syntax files, please follow these guidelines:
 ### File Organization
 
 - **boxlang.vim** - Script syntax (`.bx`, `.bxs` files)
-- **boxlang-template.vim** - Template syntax (`.bxm` files)
+- **boxlangTemplate.vim** - Template syntax (`.bxm` files)
 - **ftdetect/boxlang.vim** - Filetype detection
 
 ### Syntax Patterns

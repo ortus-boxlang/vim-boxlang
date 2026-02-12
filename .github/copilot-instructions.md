@@ -13,7 +13,7 @@ The plugin uses **two separate syntax files** because BoxLang has fundamentally 
    - Supports component islands (triple backtick blocks containing template syntax)
    - ~330 lines
 
-2. **`syntax/boxlang-template.vim`** - Template/markup syntax (`.bxm` files)
+2. **`syntax/boxlangTemplate.vim`** - Template/markup syntax (`.bxm` files)
    - HTML + `bx:` prefixed tags (`<bx:if>`, `<bx:output>`, etc.)
    - Embedded `<bx:script>` blocks containing full script syntax
    - Includes vim's html.vim for markup highlighting
@@ -80,11 +80,11 @@ syn match boxlangBitwiseOp "\vb\|"  " NOT: "\<b|\>"
 ### Cross-Syntax Embedding
 ```vim
 " In boxlang.vim (script file):
-syn include @boxlangTemplateIsland syntax/boxlang-template.vim
+syn include @boxlangTemplateIsland syntax/boxlangTemplate.vim
 unlet b:current_syntax
 syn region boxlangComponentIsland matchgroup=boxlangIslandDelim start="```" end="```" contains=@boxlangTemplateIsland
 
-" In boxlang-template.vim (template file):
+" In boxlangTemplate.vim (template file):
 syn include @boxlangScript syntax/boxlang.vim
 unlet b:current_syntax
 syn region boxlangScriptBlock start="<bx:script>" end="</bx:script>" contains=@boxlangScript
@@ -104,7 +104,7 @@ syn region boxlangScriptBlock start="<bx:script>" end="</bx:script>" contains=@b
 ```bash
 # Symlink for live development (Vim)
 ln -sf $PWD/syntax/boxlang.vim ~/.vim/syntax/
-ln -sf $PWD/syntax/boxlang-template.vim ~/.vim/syntax/
+ln -sf $PWD/syntax/boxlangTemplate.vim ~/.vim/syntax/
 ln -sf $PWD/ftdetect/boxlang.vim ~/.vim/ftdetect/
 
 # Or Neovim
@@ -170,7 +170,7 @@ syn keyword boxlangOperator mynewop
 
 ### Add a template tag:
 ```vim
-" In syntax/boxlang-template.vim
+" In syntax/boxlangTemplate.vim
 syn keyword boxlangTag contained mynewTag
 " Add region for folding if it's a body tag:
 syn region boxlangMyNewTagRegion transparent fold start="<bx:mynewTag\>" end="</bx:mynewTag>" contains=ALL

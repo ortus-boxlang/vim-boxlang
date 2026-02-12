@@ -1,4 +1,4 @@
-<!--- 
+<!---
     BoxLang Template Scope Highlighting Test
     Tests all variable scopes in template context
 --->
@@ -40,7 +40,7 @@
 </bx:output>
 
 <!--- Scopes in attributes --->
-<bx:component template="userCard.bxm" 
+<bx:component template="userCard.bxm"
               user="#session.user#"
               appName="#application.siteName#"
               requestTime="#request.startTime#">
@@ -66,19 +66,19 @@
     application.scriptSet = true
     session.lastAction = now()
     request.scriptProcessed = true
-    
+
     // Thread operations
     threadRun(function() {
         thread.scriptThread = "Thread from script"
         bxThread.scriptThreadName.status = "running"
     })
-    
+
     // Form processing
     if (structKeyExists(form, "submit")) {
         session.formData = form
         request.formProcessed = true
     }
-    
+
     // URL parameters
     if (structKeyExists(url, "action")) {
         variables.action = url.action
@@ -89,8 +89,8 @@
 <!--- CGI scope usage --->
 <footer>
     <p><small>
-        Server: #server.boxlang.version# | 
-        Request: #cgi.request_method# #cgi.script_name# | 
+        Server: #server.boxlang.version# |
+        Request: #cgi.request_method# #cgi.script_name# |
         Client: #cgi.remote_host#
     </small></p>
 </footer>

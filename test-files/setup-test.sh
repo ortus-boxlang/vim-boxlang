@@ -39,11 +39,11 @@ echo "🔗 Creating symlinks..."
 
 # Create symlinks
 ln -sf "$PROJECT_DIR/syntax/boxlang.vim" "$VIM_DIR/syntax/"
-ln -sf "$PROJECT_DIR/syntax/boxlang-template.vim" "$VIM_DIR/syntax/"
+ln -sf "$PROJECT_DIR/syntax/boxlangTemplate.vim" "$VIM_DIR/syntax/"
 ln -sf "$PROJECT_DIR/ftdetect/boxlang.vim" "$VIM_DIR/ftdetect/"
 
 echo "   ✓ boxlang.vim"
-echo "   ✓ boxlang-template.vim"
+echo "   ✓ boxlangTemplate.vim"
 echo "   ✓ ftdetect/boxlang.vim"
 
 echo ""

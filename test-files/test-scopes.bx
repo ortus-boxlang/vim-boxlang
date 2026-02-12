@@ -35,7 +35,7 @@ class {
         bxHttp.requestData.header = "value"
         attributes.componentAttr = "Component attribute"
         caller.callerVariable = "Set in calling template"
-        
+
         // Exception handling scope
         try {
             // some code
@@ -52,7 +52,7 @@ class {
 
         // Scopes in function calls
         queryExecute("SELECT * FROM users WHERE id = ?", [session.userId])
-        
+
         // Nested scope access
         variables.config.settings.getValue(url.page)
         this.user.preferences.set(cookie.preferences)

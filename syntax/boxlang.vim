@@ -200,7 +200,7 @@ endif
 
 if b:boxlang_include_depth < 1
   let b:boxlang_include_depth += 1
-  syn include @boxlangTemplateIsland syntax/boxlang-template.vim
+  syn include @boxlangTemplateIsland syntax/boxlangTemplate.vim
   unlet! b:current_syntax
   let b:boxlang_include_depth -= 1
 

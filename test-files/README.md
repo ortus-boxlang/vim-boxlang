@@ -45,14 +45,14 @@ If you prefer manual setup:
 ### For Vim:
 ```bash
 ln -sf $PWD/../syntax/boxlang.vim ~/.vim/syntax/
-ln -sf $PWD/../syntax/boxlang-template.vim ~/.vim/syntax/
+ln -sf $PWD/../syntax/boxlangTemplate.vim ~/.vim/syntax/
 ln -sf $PWD/../ftdetect/boxlang.vim ~/.vim/ftdetect/
 ```
 
 ### For Neovim:
 ```bash
 ln -sf $PWD/../syntax/boxlang.vim ~/.config/nvim/syntax/
-ln -sf $PWD/../syntax/boxlang-template.vim ~/.config/nvim/syntax/
+ln -sf $PWD/../syntax/boxlangTemplate.vim ~/.config/nvim/syntax/
 ln -sf $PWD/../ftdetect/boxlang.vim ~/.config/nvim/ftdetect/
 ```
 
