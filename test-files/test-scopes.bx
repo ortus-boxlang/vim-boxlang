@@ -1,0 +1,87 @@
+/**
+ * BoxLang Scope Highlighting Test
+ * Tests all variable scopes from the BoxLang documentation
+ */
+class {
+
+    function testAllScopes() {
+        // Core function/class scopes
+        variables.privateVar = "Private to class"
+        local.temp = "Function-local variable"
+        arguments.param1 = "Function argument"
+        this.publicVar = "Public class variable"
+        static.classLevel = "Static class variable"
+        super.parentMethod()
+
+        // Persistence scopes
+        application.siteName = "My BoxLang App"
+        session.userId = 12345
+        request.startTime = now()
+        server.boxlangVersion = "1.0.0"
+
+        // Web-specific scopes
+        cgi.remote_addr = "192.168.1.1"
+        form.username = "john.doe"
+        url.page = 1
+        cookie.preferences = "dark-mode"
+        client.deprecated = "Still supported for compat"
+
+        // Thread scopes
+        thread.localData = "Thread-specific"
+        bxThread.threadName.result = "Global thread metadata"
+
+        // Special scopes
+        bxFile.uploadedFile.size = 1024
+        bxHttp.requestData.header = "value"
+        attributes.componentAttr = "Component attribute"
+        caller.callerVariable = "Set in calling template"
+        
+        // Exception handling scope
+        try {
+            // some code
+        } catch (any cfcatch) {
+            writeDump(cfcatch.message)
+        }
+
+        // All scopes in one expression
+        result = variables.data + local.temp + arguments.param1 +
+                 this.publicVar + static.classLevel +
+                 application.siteName + session.userId +
+                 request.startTime + server.boxlangVersion +
+                 bxThread.myThread.status
+
+        // Scopes in function calls
+        queryExecute("SELECT * FROM users WHERE id = ?", [session.userId])
+        
+        // Nested scope access
+        variables.config.settings.getValue(url.page)
+        this.user.preferences.set(cookie.preferences)
+
+        return {
+            "variables": variables.privateVar,
+            "local": local.temp,
+            "arguments": arguments.param1,
+            "this": this.publicVar,
+            "static": static.classLevel,
+            "application": application.siteName,
+            "session": session.userId,
+            "request": request.startTime,
+            "server": server.boxlangVersion,
+            "cgi": cgi.remote_addr,
+            "form": form.username,
+            "url": url.page,
+            "cookie": cookie.preferences,
+            "thread": thread.localData,
+            "bxThread": bxThread.threadName.result
+        }
+    }
+
+    function testScopeAssignment() {
+        // Different ways to assign to scopes
+        variables["dynamicKey"] = "Dynamic variables access"
+        this["publicKey"] = "Dynamic this access"
+        session["user_" & getUserId()] = "Dynamic session key"
+        application["feature_" & getFeatureName()] = true
+    }
+
+}

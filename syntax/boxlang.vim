@@ -315,11 +315,11 @@ hi def link boxlangFunction Function
 hi def link boxlangArrowFunction Special
 hi def link boxlangLambdaFunction Special
 
-" Annotations
-hi def link boxlangAnnotation PreProc
-hi def link boxlangAnnotationName PreProc
-hi def link boxlangAnnotationKey Identifier
-hi def link boxlangAnnotationSimple PreProc
+" Annotations (distinct colors for visibility)
+hi def link boxlangAnnotation SpecialComment
+hi def link boxlangAnnotationName Macro
+hi def link boxlangAnnotationKey Macro
+hi def link boxlangAnnotationSimple SpecialComment
 
 " Component Islands
 hi def link boxlangIslandDelim Special
@@ -334,7 +334,7 @@ hi def link boxlangDot Operator
 hi def link boxlangColon Operator
 
 " Scopes
-hi def link boxlangScope Identifier
+hi def link boxlangScope Type
 
 " Special constructs
 hi def link boxlangImport Include

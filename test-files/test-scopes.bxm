@@ -1,0 +1,99 @@
+<!--- 
+    BoxLang Template Scope Highlighting Test
+    Tests all variable scopes in template context
+--->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>#variables.pageTitle# - #application.siteName#</title>
+</head>
+<body>
+
+<!--- Core scopes in expressions --->
+<h1>Welcome to #application.siteName#</h1>
+<p>User: #session.username# (ID: #session.userId#)</p>
+<p>Request ID: #request.requestId#</p>
+<p>Server: #server.boxlang.version#</p>
+
+<!--- Web-specific scopes --->
+<p>Your IP: #cgi.remote_addr#</p>
+<p>Browser: #cgi.http_user_agent#</p>
+
+<bx:if condition="#structKeyExists(url, 'debug')#">
+    <div class="debug">
+        <h2>Debug Info</h2>
+        <p>URL debug param: #url.debug#</p>
+        <p>Form data: #structKeyList(form)#</p>
+        <p>Cookie count: #structCount(cookie)#</p>
+    </div>
+</bx:if>
+
+<!--- Thread scope example --->
+<bx:thread name="dataLoader" attributes.dataSource="myDB">
+    <bx:set thread.result = queryExecute("SELECT * FROM users")>
+    <bx:set thread.count = thread.result.recordCount>
+</bx:thread>
+
+<bx:output>
+    <p>Thread status: #bxThread.dataLoader.status#</p>
+    <p>Records loaded: #bxThread.dataLoader.count#</p>
+</bx:output>
+
+<!--- Scopes in attributes --->
+<bx:component template="userCard.bxm" 
+              user="#session.user#"
+              appName="#application.siteName#"
+              requestTime="#request.startTime#">
+    <!--- Inside component, can access: --->
+    <!--- attributes.user, attributes.appName, etc. --->
+    <!--- caller.someVariable to set in parent scope --->
+</bx:component>
+
+<!--- Loop with scope access --->
+<bx:loop query="#variables.users#">
+    <div class="user">
+        <h3>#variables.users.name[variables.users.currentRow]#</h3>
+        <p>Email: #variables.users.email[currentRow]#</p>
+        <p>Status: #this.getUserStatus(variables.users.id[currentRow])#</p>
+    </div>
+</bx:loop>
+
+<!--- Script block with all scopes --->
+<bx:script>
+    // All scopes available in script blocks too
+    variables.localData = "Script local"
+    this.publicData = "Script public"
+    application.scriptSet = true
+    session.lastAction = now()
+    request.scriptProcessed = true
+    
+    // Thread operations
+    threadRun(function() {
+        thread.scriptThread = "Thread from script"
+        bxThread.scriptThreadName.status = "running"
+    })
+    
+    // Form processing
+    if (structKeyExists(form, "submit")) {
+        session.formData = form
+        request.formProcessed = true
+    }
+    
+    // URL parameters
+    if (structKeyExists(url, "action")) {
+        variables.action = url.action
+        request.actionTaken = true
+    }
+</bx:script>
+
+<!--- CGI scope usage --->
+<footer>
+    <p><small>
+        Server: #server.boxlang.version# | 
+        Request: #cgi.request_method# #cgi.script_name# | 
+        Client: #cgi.remote_host#
+    </small></p>
+</footer>
+
+</body>
+</html>

@@ -201,7 +201,7 @@ hi def link boxlangNumber Number
 hi def link boxlangOperator Operator
 hi def link boxlangDot Operator
 hi def link boxlangKeyword Keyword
-hi def link boxlangScope Identifier
+hi def link boxlangScope Type
 hi def link boxlangFunction Function
 hi def link boxlangIdentifier Identifier
 " / HIGHLIGHTING }}}
