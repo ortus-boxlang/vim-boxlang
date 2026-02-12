@@ -1,0 +1,235 @@
+<!--- 
+    BoxLang Template Test File
+    Tests all template syntax highlighting features
+--->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>#variables.pageTitle#</title>
+</head>
+<body>
+
+<!--- Template comments are BoxLang-specific --->
+<h1>BoxLang Template Syntax Test</h1>
+
+<!--- Expression interpolation in text --->
+<p>Welcome to #application.name# version #application.version#!</p>
+<p>Current user: #session.user.name# (ID: #session.user.id#)</p>
+
+<!--- Escaped hash marks --->
+<p>Follow us at ##BoxLang on social media</p>
+
+<!--- Control flow: if/elseif/else --->
+<bx:if condition="#isLoggedIn()#">
+    <div class="logged-in">
+        <p>Welcome back, #getUserName()#!</p>
+        <bx:if condition="#isAdmin()#">
+            <a href="/admin">Admin Panel</a>
+        <bx:elseif condition="#isModerator()#">
+            <a href="/moderate">Moderation</a>
+        <bx:else>
+            <a href="/profile">Your Profile</a>
+        </bx:if>
+    </div>
+<bx:else>
+    <div class="logged-out">
+        <a href="/login">Please log in</a>
+    </div>
+</bx:if>
+
+<!--- Output tag --->
+<bx:output>
+    <h2>Dynamic Content</h2>
+    <p>Server time: #now()#</p>
+    <p>Calculation: #10 + 20# = 30</p>
+</bx:output>
+
+<!--- For loop --->
+<bx:output>
+    <ul>
+        <bx:for array="#users#" index="i" item="user">
+            <li>###i#: #user.name# (#user.email#)</li>
+        </bx:for>
+    </ul>
+</bx:output>
+
+<!--- For loop with collection --->
+<bx:for collection="#products#" item="product">
+    <div class="product">
+        <h3>#product.name#</h3>
+        <p>Price: $#product.price#</p>
+    </div>
+</bx:for>
+
+<!--- While loop --->
+<bx:set counter = 0>
+<bx:while condition="#counter < 5#">
+    <p>Counter: #counter#</p>
+    <bx:set counter = counter + 1>
+</bx:while>
+
+<!--- Switch/case --->
+<bx:switch expression="#variables.status#">
+    <bx:case value="active">
+        <span class="badge badge-success">Active</span>
+    </bx:case>
+    <bx:case value="pending">
+        <span class="badge badge-warning">Pending</span>
+    </bx:case>
+    <bx:case value="inactive">
+        <span class="badge badge-danger">Inactive</span>
+    </bx:case>
+    <bx:defaultcase>
+        <span class="badge badge-secondary">Unknown</span>
+    </bx:defaultcase>
+</bx:switch>
+
+<!--- Try/Catch/Finally --->
+<bx:try>
+    <p>Attempting risky operation...</p>
+    <bx:set result = riskyFunction()>
+    <p>Success: #result#</p>
+    
+    <bx:catch type="database">
+        <p class="error">Database error occurred</p>
+    </bx:catch>
+    
+    <bx:catch type="any">
+        <p class="error">An error occurred: #cfcatch.message#</p>
+    </bx:catch>
+    
+    <bx:finally>
+        <p>Cleanup completed</p>
+    </bx:finally>
+</bx:try>
+
+<!--- Setting variables --->
+<bx:set userName = "John Doe">
+<bx:set currentDate = now()>
+<bx:set isActive = true>
+
+<!--- Include and import --->
+<bx:include template="header.bxm">
+<bx:import path="lib.utils.*">
+
+<!--- Function definition in template --->
+<bx:function name="formatCurrency" returntype="string">
+    <bx:argument name="amount" type="numeric" required="true">
+    <bx:argument name="currency" type="string" default="USD">
+    
+    <bx:return "#currency# #numberFormat(amount, '0.00')#">
+</bx:function>
+
+<!--- Using the function --->
+<p>Total: #formatCurrency(amount=123.45, currency="EUR")#</p>
+
+<!--- Component definition in template --->
+<bx:component displayname="User" output="false">
+    <bx:property name="id" type="numeric">
+    <bx:property name="name" type="string">
+    <bx:property name="email" type="string">
+    
+    <bx:function name="init" access="public" returntype="User">
+        <bx:argument name="id" type="numeric" required="true">
+        <bx:argument name="name" type="string" required="true">
+        
+        <bx:set this.id = arguments.id>
+        <bx:set this.name = arguments.name>
+        
+        <bx:return this>
+    </bx:function>
+    
+    <bx:function name="getDisplayName" access="public" returntype="string">
+        <bx:return "#this.name# (ID: #this.id#)">
+    </bx:function>
+</bx:component>
+
+<!--- Lock tag for thread safety --->
+<bx:lock name="userUpdate" timeout="30" type="exclusive">
+    <bx:set application.users[userId] = userData>
+</bx:lock>
+
+<!--- Thread for async operations --->
+<bx:thread name="emailSender" action="run">
+    <bx:set result = sendEmail(to=user.email, subject="Welcome")>
+</bx:thread>
+
+<!--- Transaction for database operations --->
+<bx:transaction>
+    <bx:set queryExecute("INSERT INTO users (name, email) VALUES (?, ?)", [name, email])>
+    <bx:set queryExecute("INSERT INTO logs (action) VALUES (?)", ["user_created"])>
+</bx:transaction>
+
+<!--- Param for declaring variables --->
+<bx:param name="url.page" default="1">
+<bx:param name="form.search" default="">
+
+<!--- Embedded script block with full script syntax --->
+<bx:script>
+    // This is full BoxLang script syntax
+    function processData(array items) {
+        // Arrow functions
+        var doubled = items.map((x) => x * 2);
+        
+        // Bitwise operators
+        var flags = 5 b| 3;
+        
+        // Strict equality
+        if (flags === 7) {
+            return doubled;
+        }
+        
+        return [];
+    }
+    
+    // Lambda function
+    var filter = (item) -> {
+        return item.active === true;
+    };
+    
+    // String interpolation in script
+    var message = "Found #arrayLen(data)# items";
+    
+    // Data structures
+    var config = {
+        enabled: true,
+        timeout: 30,
+        retries: 3
+    };
+</bx:script>
+
+<!--- Break and continue in loops --->
+<bx:for index="i" from="1" to="10">
+    <bx:if condition="#i == 5#">
+        <bx:continue>
+    </bx:if>
+    <bx:if condition="#i == 8#">
+        <bx:break>
+    </bx:if>
+    <p>#i#</p>
+</bx:for>
+
+<!--- Throw and rethrow --->
+<bx:try>
+    <bx:if condition="#not isValid(data)#">
+        <bx:throw message="Invalid data" type="ValidationException">
+    </bx:if>
+    
+    <bx:catch type="ValidationException">
+        <p>Validation failed</p>
+        <bx:rethrow>
+    </bx:catch>
+</bx:try>
+
+<!--- Abort and exit --->
+<bx:if condition="#not isDevelopment()#">
+    <bx:abort showerror="Access denied">
+</bx:if>
+
+<bx:if condition="#redirectNeeded#">
+    <bx:exit method="redirect" url="/new-location">
+</bx:if>
+
+</body>
+</html>

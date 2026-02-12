@@ -1,0 +1,293 @@
+/**
+ * BoxLang Script Test File
+ * Tests all major syntax highlighting features
+ */
+@Component
+@DisplayName("UserService")
+class UserService {
+
+    // Properties with annotations
+    @Inject
+    property String datasource;
+
+    property Number maxRetries = 3;
+    private static String version = "1.0.0";
+
+    /**
+     * Constructor with arrow function syntax
+     */
+    public function init() => this;
+
+    /**
+     * Test modern keywords and control flow
+     */
+    public function testKeywords() {
+        // Class, interface, assert are BoxLang-specific
+        assert(this.maxRetries > 0, "Max retries must be positive");
+
+        var result = new Component();
+        final var constant = "immutable";
+
+        // Control flow
+        if (true) {
+            return "success";
+        } else if (false) {
+            throw("error");
+        } else {
+            for (var i = 1; i <= 10; i++) {
+                continue;
+            }
+        }
+
+        // Switch case
+        switch (result) {
+            case "success":
+                break;
+            case "error":
+                rethrow;
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Test operators including BoxLang-specific bitwise
+     */
+    public function testOperators() {
+        // Standard operators
+        var sum = 10 + 5;
+        var product = 10 * 5;
+        var power = 2 ^ 8;
+
+        // Comparison operators
+        var isEqual = (10 == 10);
+        var isStrictEqual = (10 === 10);  // BoxLang strict equality
+        var isNotEqual = (10 != 5);
+        var isStrictNotEqual = (10 !== "10");  // BoxLang strict inequality
+
+        // Logical operators
+        var andResult = (true && false);
+        var orResult = (true || false);
+        var xorResult = (true xor false);
+
+        // Elvis operator
+        var value = nullVar ?: "default";
+
+        // Ternary operator
+        var result = (age > 18) ? "adult" : "minor";
+
+        // Bitwise operators (BoxLang-specific)
+        var bitwiseOr = 5 b| 3;      // 7
+        var bitwiseAnd = 5 b& 3;     // 1
+        var bitwiseXor = 5 b^ 3;     // 6
+        var bitwiseNot = b~5;         // -6
+        var leftShift = 5 b<< 2;     // 20
+        var rightShift = 20 b>> 2;   // 5
+        var unsignedShift = -1 b>>> 1;
+
+        // String concatenation
+        var fullName = "John" & " " & "Doe";
+
+        // Static BIF reference
+        var funcRef = ::arrayMap;
+
+        return {
+            "operators": "tested",
+            "bitwise": bitwiseOr
+        };
+    }
+
+    /**
+     * Test string interpolation
+     */
+    public function testStrings() {
+        var name = "BoxLang";
+        var version = 1.0;
+
+        // String interpolation with #expression#
+        var message = "Welcome to #name# version #version#!";
+
+        // Escaped hash marks
+        var hashtag = "Follow us at ##BoxLang";
+
+        // Single quotes
+        var singleQuoted = 'This is #name# too';
+
+        // Complex interpolation
+        var complex = "Result: #10 + 20# items";
+
+        return message;
+    }
+
+    /**
+     * Test function definitions - arrow and lambda
+     */
+    public function testFunctions() {
+        // Arrow function (expression body)
+        var square = (x) => x * x;
+
+        // Lambda function (block body)
+        var cube = (x) -> {
+            return x * x * x;
+        };
+
+        // Anonymous function
+        var multiply = function(a, b) {
+            return a * b;
+        };
+
+        // Array operations with arrow functions
+        var numbers = [1, 2, 3, 4, 5];
+        var doubled = numbers.map((n) => n * 2);
+        var filtered = numbers.filter((n) -> n > 2);
+
+        return doubled;
+    }
+
+    /**
+     * Test data structures
+     */
+    public function testDataStructures() {
+        // Array literals
+        var simpleArray = [1, 2, 3, 4, 5];
+        var mixedArray = ["string", 123, true, null];
+
+        // Struct literals (both syntaxes)
+        var struct1 = {
+            name: "John",
+            age: 30,
+            active: true
+        };
+
+        var struct2 = {
+            name = "Jane",
+            age = 25,
+            active = false
+        };
+
+        // Nested structures
+        var nested = {
+            users: [
+                { id: 1, name: "Alice" },
+                { id: 2, name: "Bob" }
+            ],
+            metadata: {
+                version: "1.0",
+                lastUpdated: now()
+            }
+        };
+
+        // Array access
+        var firstItem = simpleArray[1];
+
+        // Struct access
+        var userName = struct1.name;
+        var userAge = struct1["age"];
+
+        return nested;
+    }
+
+    /**
+     * Test scopes
+     */
+    public function testScopes() {
+        // Local scope
+        var localVar = "local";
+        local.anotherVar = "also local";
+
+        // Variables scope
+        variables.instanceVar = "instance";
+
+        // Arguments scope
+        arguments.firstArg = "argument";
+
+        // Application scope
+        application.appName = "MyApp";
+
+        // Session scope
+        session.userId = 123;
+
+        // Request scope
+        request.data = {};
+
+        // Server scope
+        server.startTime = now();
+
+        // This scope
+        this.publicProp = "public";
+
+        // Super scope
+        super.parentMethod();
+
+        return localVar;
+    }
+
+    /**
+     * Test comments
+     */
+    public function testComments() {
+        // Single line comment
+        var x = 10;  // inline comment
+
+        /*
+         * Multi-line comment
+         * spanning multiple lines
+         */
+        var y = 20;
+
+        /**
+         * JavaDoc-style comment
+         * @param value The input value
+         * @return The processed result
+         */
+        function process(value) {
+            // TODO: Implement this
+            // FIXME: Handle edge cases
+            // XXX: This needs review
+            // HACK: Temporary workaround
+            // NOTE: Important consideration
+            return value;
+        }
+
+        return x + y;
+    }
+
+    /**
+     * Test try/catch/finally
+     */
+    public function testExceptionHandling() {
+        try {
+            throw("Custom exception", "CustomException");
+        } catch (CustomException e) {
+            // Handle custom exception
+            throw("Re-thrown exception");
+        } catch (any e) {
+            // Handle any exception
+            rethrow;
+        } finally {
+            // Cleanup code
+            writeLog("Exception handled");
+        }
+    }
+
+    /**
+     * Test component island (template in script)
+     */
+    public function getTemplate() {
+        return ```
+        <bx:output>
+            <h1>Hello from BoxLang!</h1>
+            <bx:if condition="#isLoggedIn()#">
+                <p>Welcome back, #getUserName()#!</p>
+            </bx:if>
+        </bx:output>
+        ```;
+    }
+}
+
+// Interface definition
+interface IUserRepository {
+    public function findById(required numeric id);
+    public function save(required struct user);
+    public function delete(required numeric id);
+}

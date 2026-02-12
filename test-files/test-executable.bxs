@@ -1,0 +1,82 @@
+#!/usr/bin/env boxlang
+/**
+ * BoxLang executable script test (.bxs)
+ * Can be run directly from command line
+ */
+
+// Simple script without class wrapper
+println("BoxLang Script Executable Test");
+
+// Variables
+var name = "BoxLang";
+var version = 1.0;
+
+// String interpolation
+println("Welcome to #name# version #version#!");
+
+// Bitwise operators
+var flags = 0;
+flags = flags b| 1;  // Set bit 0
+flags = flags b| 2;  // Set bit 1
+println("Flags: #flags#");
+
+// Strict equality
+if (flags === 3) {
+    println("Both flags set!");
+}
+
+// Arrow function
+var square = (x) => x * x;
+println("Square of 5: #square(5)#");
+
+// Lambda function with block
+var fibonacci = (n) -> {
+    if (n <= 1) return n;
+    return fibonacci(n - 1) + fibonacci(n - 2);
+};
+
+println("Fibonacci(10): #fibonacci(10)#");
+
+// Array operations
+var numbers = [1, 2, 3, 4, 5];
+var doubled = numbers.map((n) => n * 2);
+println("Doubled: #doubled.toString()#");
+
+// Elvis operator
+var defaultValue = null ?: "default";
+println("Default: #defaultValue#");
+
+// Static BIF reference
+var sorter = ::arraySort;
+
+// Struct with both syntaxes
+var person1 = {
+    name: "Alice",
+    age: 30
+};
+
+var person2 = {
+    name = "Bob",
+    age = 25
+};
+
+println("Person 1: #person1.name# (#person1.age#)");
+println("Person 2: #person2.name# (#person2.age#)");
+
+// Try/catch
+try {
+    throw("Test exception", "TestException");
+} catch (TestException e) {
+    println("Caught: #e.message#");
+} finally {
+    println("Cleanup done");
+}
+
+// Loop with break/continue
+for (var i = 1; i <= 10; i++) {
+    if (i == 5) continue;
+    if (i == 8) break;
+    println("Number: #i#");
+}
+
+println("Script completed successfully!");
