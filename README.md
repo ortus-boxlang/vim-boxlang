@@ -117,11 +117,13 @@ git clone https://github.com/ortus-solutions/vim-boxlang.git
 ### Manual Installation
 
 1. Clone this repository:
+
    ```bash
    git clone https://github.com/ortus-solutions/vim-boxlang.git
    ```
 
 2. Copy the files to your vim runtime directory:
+
    ```bash
    cp -r vim-boxlang/syntax ~/.vim/
    cp -r vim-boxlang/ftdetect ~/.vim/
@@ -130,6 +132,7 @@ git clone https://github.com/ortus-solutions/vim-boxlang.git
 ### NeoVim
 
 For NeoVim, use the same installation methods but replace `~/.vim` with:
+
 - Linux/macOS: `~/.config/nvim`
 - Windows: `~/AppData/Local/nvim`
 
@@ -287,6 +290,7 @@ set foldlevelstart=10
 ```
 
 Folds are automatically created for:
+
 - Classes and interfaces
 - Functions
 - Control structures (`if`, `for`, `while`, `switch`, `try`)
@@ -297,16 +301,19 @@ Folds are automatically created for:
 ### Syntax highlighting not working
 
 1. Verify filetype is set correctly:
+
    ```vim
    :set filetype?
    ```
 
 2. Check if syntax is enabled:
+
    ```vim
    :syntax on
    ```
 
 3. Reload the syntax file:
+
    ```vim
    :syntax clear
    :edit

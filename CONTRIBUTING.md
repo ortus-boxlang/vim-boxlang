@@ -69,22 +69,25 @@ To develop on vim-boxlang, you will need:
 Here's how to set up for development:
 
 1. Fork and clone the repository:
+
    ```bash
    git clone git@github.com:YOUR-USERNAME/vim-boxlang.git
    cd vim-boxlang
    ```
 
 2. Install the plugin locally for testing:
-   
+
    **For Vim:**
+
    ```bash
    mkdir -p ~/.vim/syntax ~/.vim/ftdetect
    ln -s $PWD/syntax/boxlang.vim ~/.vim/syntax/
    ln -s $PWD/syntax/boxlang-template.vim ~/.vim/syntax/
    ln -s $PWD/ftdetect/boxlang.vim ~/.vim/ftdetect/
    ```
-   
+
    **For Neovim:**
+
    ```bash
    mkdir -p ~/.config/nvim/syntax ~/.config/nvim/ftdetect
    ln -s $PWD/syntax/boxlang.vim ~/.config/nvim/syntax/
@@ -93,6 +96,7 @@ Here's how to set up for development:
    ```
 
 3. Create test BoxLang files:
+
    ```bash
    mkdir -p test-files
    # Create .bx, .bxs, and .bxm files for testing
@@ -111,6 +115,7 @@ Before submitting a PR, test your syntax changes thoroughly:
    - Edge cases and complex nesting
 
 2. **Visual inspection** in vim/neovim:
+
    ```vim
    :e test-files/sample.bx
    :syntax on
@@ -118,6 +123,7 @@ Before submitting a PR, test your syntax changes thoroughly:
    ```
 
 3. **Test different color schemes** to ensure highlighting works across themes:
+
    ```vim
    :colorscheme desert
    :colorscheme murphy
@@ -125,6 +131,7 @@ Before submitting a PR, test your syntax changes thoroughly:
    ```
 
 4. **Test folding** if you modified fold regions:
+
    ```vim
    :set foldmethod=syntax
    :set foldenable
@@ -132,6 +139,7 @@ Before submitting a PR, test your syntax changes thoroughly:
    ```
 
 5. **Check filetype detection**:
+
    ```vim
    :set filetype?
    ```
@@ -149,12 +157,14 @@ When contributing to the syntax files, please follow these guidelines:
 ### Syntax Patterns
 
 1. **Use descriptive names** with `boxlang` prefix:
+
    ```vim
    syn keyword boxlangKeyword class interface
    syn match boxlangOperator "==="
    ```
 
 2. **Group related items**:
+
    ```vim
    " KEYWORDS {{{
    syn keyword boxlangKeyword ...
@@ -162,17 +172,20 @@ When contributing to the syntax files, please follow these guidelines:
    ```
 
 3. **Add comments** explaining complex patterns:
+
    ```vim
    " Bitwise operators (BoxLang-specific)
    syn match boxlangBitwiseOp "\vb\|"
    ```
 
 4. **Use regions for containment**:
+
    ```vim
    syn region boxlangString start='"' end='"' contains=boxlangInterpolation
    ```
 
 5. **Link to standard highlight groups**:
+
    ```vim
    hi def link boxlangKeyword Keyword
    hi def link boxlangString String
