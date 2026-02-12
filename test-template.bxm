@@ -1,0 +1,49 @@
+<!--- BoxLang Template Test File --->
+<h1>Test BoxLang Template Syntax</h1>
+
+<!--- Test bx:if tag --->
+<bx:if condition="true">
+	<p>This is inside a bx:if tag</p>
+	<bx:output>#variables.name#</bx:output>
+</bx:if>
+
+<!--- Test expression interpolation --->
+<p>Hello, #user.name#! Your ID is #user.id#</p>
+<p>Escaped hash: ##notAnExpression##</p>
+
+<!--- Test bx:for loop --->
+<bx:for item="value" collection="#items#">
+	<li>#value#</li>
+</bx:for>
+
+<!--- Test nested tags --->
+<bx:output>
+	<bx:if condition="#hasData#">
+		Data: #data#
+	</bx:if>
+</bx:output>
+
+<!--- Test self-closing tag --->
+<bx:set name="myVar" value="123" />
+<bx:return value="#result#" />
+
+<!--- Test HTML with BoxLang expressions --->
+<div class="container">
+	<span>#variables.message#</span>
+	<input type="text" value="#form.username#" />
+</div>
+
+<!--- Test scopes --->
+<p>Application: #application.name#</p>
+<p>Session: #session.userID#</p>
+<p>Request: #request.timestamp#</p>
+<p>CGI: #cgi.server_name#</p>
+
+<!--- Test bx:script block --->
+<bx:script>
+	function getData() {
+		return { success: true, data: [] };
+	}
+	
+	var result = getData();
+</bx:script>

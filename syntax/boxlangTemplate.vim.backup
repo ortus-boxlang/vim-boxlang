@@ -23,14 +23,15 @@ set cpo&vim
 syn case ignore
 
 " Don't include HTML syntax - it causes conflicts and performance issues
-" Disabled include html highlighting as it
-" contains huge keywords regex, so it will have impact on performance.
-" Use own simple SGML tag coloring instead."
+" Instead, we'll use simple tag matching like ColdFusion does
+" runtime! syntax/html.vim
+
+" Sync from start for accuracy
 syn sync fromstart
 
 " TEMPLATE COMMENTS {{{
 " BoxLang template comments: <!--- ... --->
-syn region boxlangTemplateComment start="<!---" end="--->" contains=boxlangTodo fold
+syn region boxlangTemplateComment start="<!---" end="--->" contains=boxlangTemplateComment,boxlangTodo fold
 
 " Todo markers in comments
 syn keyword boxlangTodo contained TODO FIXME XXX NOTE HACK
@@ -45,10 +46,8 @@ syn match boxlangEscapedHash "##"
 " / EXPRESSION INTERPOLATION }}}
 
 " BX: TAGS {{{
-" Following ColdFusion's approach: simple transparent regions with contained matches
-" No containedin=ALL - let the regions work naturally
-
 " Tag start region: <bx:tagname attr="value">
+" Model after ColdFusion's approach - transparent region with contained matches
 syn region boxlangTagStart keepend transparent start="\c<bx:\w\+" end=">" contains=boxlangTagBracket,boxlangTagName,boxlangAttrName,boxlangAttrValue,boxlangExpression,boxlangTemplateComment
 
 " Tag end: </bx:tagname>
@@ -67,45 +66,88 @@ syn match boxlangTagSlash contained "/>"
 " Tag attribute name
 syn match boxlangAttrName contained "\<\w\+\ze\s*="
 
-" Tag attribute value (can contain expressions)
+" Tag attribute value
 syn region boxlangAttrValue contained start=+"+ skip=+""+ end=+"+ contains=boxlangExpression
 syn region boxlangAttrValue contained start=+'+ skip=+''+ end=+'+ contains=boxlangExpression
+
+" Tag start region
+" Matches: <bx:tagname attr="value">
+" Make this work at top level to override HTML
+syn region boxlangTagStart transparent start="<bx:\w\+" end=">" contains=boxlangTagBracket,boxlangTagName,boxlangAttrName,boxlangAttrValue,boxlangTemplateComment keepend containedin=ALL
+
+" Tag end
+" Matches: </bx:tagname>
+syn match boxlangTagEnd transparent "</bx:\w\+>" contains=boxlangTagBracket,boxlangTagName containedin=ALL
+
+" Common bx: tag keywords (for tag name matching)
+" Match just the word after bx: for keyword highlighting
+syn match boxlangTagKeyword "bx:\zsif\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zselseif\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zselse\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsoutput\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsset\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsfunction\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsargument\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsreturn\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zstry\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zscatch\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsfinally\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsthrow\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsfor\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zswhile\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsloop\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsbreak\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsswitch\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zscase\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsinclude\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsimport\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsproperty\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zscomponent\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsinterface\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsscript\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsabort\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsexit\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zslock\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsthread\ze" containedin=ALL
+syn match boxlangTagKeyword "bx:\zsparam\ze" containedin=ALL
 " / BX: TAGS }}}
 
-" TAG REGIONS FOR FOLDING {{{
-" These define foldable regions for common block tags
+" TAG REGIONS AND FOLDING {{{
 " <bx:if> ... </bx:if>
-syn region boxlangIfRegion transparent fold start="\c<bx:if\>" end="\c</bx:if>" contains=ALL
+syn region boxlangIfRegion transparent fold start="<bx:if\>" end="</bx:if>" contains=ALL
 
 " <bx:output> ... </bx:output>
-syn region boxlangOutputRegion transparent fold start="\c<bx:output\>" end="\c</bx:output>" contains=ALL
+syn region boxlangOutputRegion transparent fold start="<bx:output\>" end="</bx:output>" contains=ALL
 
 " <bx:function> ... </bx:function>
-syn region boxlangFunctionRegion transparent fold start="\c<bx:function\>" end="\c</bx:function>" contains=ALL
+syn region boxlangFunctionRegion transparent fold start="<bx:function\>" end="</bx:function>" contains=ALL
 
 " <bx:try> ... </bx:try>
-syn region boxlangTryRegion transparent fold start="\c<bx:try\>" end="\c</bx:try>" contains=ALL
+syn region boxlangTryRegion transparent fold start="<bx:try\>" end="</bx:try>" contains=ALL
 
 " <bx:for> ... </bx:for>
-syn region boxlangForRegion transparent fold start="\c<bx:for\>" end="\c</bx:for>" contains=ALL
+syn region boxlangForRegion transparent fold start="<bx:for\>" end="</bx:for>" contains=ALL
 
 " <bx:while> ... </bx:while>
-syn region boxlangWhileRegion transparent fold start="\c<bx:while\>" end="\c</bx:while>" contains=ALL
+syn region boxlangWhileRegion transparent fold start="<bx:while\>" end="</bx:while>" contains=ALL
 
 " <bx:switch> ... </bx:switch>
-syn region boxlangSwitchRegion transparent fold start="\c<bx:switch\>" end="\c</bx:switch>" contains=ALL
+syn region boxlangSwitchRegion transparent fold start="<bx:switch\>" end="</bx:switch>" contains=ALL
 
 " <bx:component> ... </bx:component>
-syn region boxlangComponentRegion transparent fold start="\c<bx:component\>" end="\c</bx:component>" contains=ALL
+syn region boxlangComponentRegion transparent fold start="<bx:component\>" end="</bx:component>" contains=ALL
 
 " <bx:interface> ... </bx:interface>
-syn region boxlangInterfaceRegion transparent fold start="\c<bx:interface\>" end="\c</bx:interface>" contains=ALL
+syn region boxlangInterfaceRegion transparent fold start="<bx:interface\>" end="</bx:interface>" contains=ALL
 
 " <bx:lock> ... </bx:lock>
-syn region boxlangLockRegion transparent fold start="\c<bx:lock\>" end="\c</bx:lock>" contains=ALL
+syn region boxlangLockRegion transparent fold start="<bx:lock\>" end="</bx:lock>" contains=ALL
 
 " <bx:thread> ... </bx:thread>
-syn region boxlangThreadRegion transparent fold start="\c<bx:thread\>" end="\c</bx:thread>" contains=ALL
+syn region boxlangThreadRegion transparent fold start="<bx:thread\>" end="</bx:thread>" contains=ALL
+
+" <bx:transaction> ... </bx:transaction>
+syn region boxlangTransactionRegion transparent fold start="<bx:transaction\>" end="</bx:transaction>" contains=ALL
 " / TAG REGIONS }}}
 
 " SCRIPT BLOCKS {{{
@@ -122,7 +164,7 @@ if b:boxlang_include_depth < 1
   unlet! b:current_syntax
   let b:boxlang_include_depth -= 1
 
-  syn region boxlangScriptBlock matchgroup=boxlangTagName start="\c<bx:script\>" end="\c</bx:script>" contains=@boxlangScript,boxlangTemplateComment fold keepend
+  syn region boxlangScriptBlock matchgroup=boxlangTagName start="<bx:script>" end="</bx:script>" contains=@boxlangScript,boxlangTemplateComment fold keepend
 endif
 " / SCRIPT BLOCKS }}}
 
@@ -166,10 +208,6 @@ syn match boxlangFunction contained "\<\w\+\ze\s*("
 syn match boxlangIdentifier contained "\<\w\+\>"
 " / BASIC SYNTAX }}}
 
-" NOTE: HTML tags are not highlighted on purpose
-" Following ColdFusion's approach: no HTML matching to avoid conflicts
-" BoxLang tags (bx:*) and expressions are the focus
-
 " HIGHLIGHTING LINKS {{{
 " Template comments
 hi def link boxlangTemplateComment Comment
@@ -182,10 +220,13 @@ hi def link boxlangEscapedHash SpecialChar
 
 " Tags
 hi def link boxlangTagName Identifier
+hi def link boxlangTagPrefix Special
+hi def link boxlangTagKeyword Keyword
 hi def link boxlangTagBracket Delimiter
 hi def link boxlangTagSlash Delimiter
 hi def link boxlangAttrName Type
 hi def link boxlangAttrValue String
+hi def link boxlangTag Keyword
 
 " Basic syntax elements (for expressions)
 hi def link boxlangBoolean Boolean
