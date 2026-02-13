@@ -1,0 +1,16 @@
+name: Pull Request Validation
+
+on:
+  push:
+    branches-ignore:
+      - "main"
+      - "master"
+      - "development"
+      - "releases/v*"
+  pull_request:
+    branches: [ development ]
+
+jobs:
+  test:
+    name: Run Bundle Tests
+    uses: ./.github/workflows/tests.yml

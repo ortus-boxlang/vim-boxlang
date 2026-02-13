@@ -1,0 +1,75 @@
+name: Tests
+
+on:
+  workflow_call:
+    inputs:
+      checkout-ref:
+        description: 'Git ref to checkout'
+        required: false
+        type: string
+        default: ''
+    # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v6
+      with:
+        ref: ${{ inputs.checkout-ref }}
+
+    - name: Check required files exist
+      run: |
+        echo "Checking bundle structure..."
+
+        # Check main bundle file
+        test -f info.plist || (echo "❌ Missing info.plist" && exit 1)
+        echo "✅ info.plist exists"
+
+        # Check main directories
+        test -d Syntaxes/ || (echo "❌ Missing Syntaxes directory" && exit 1)
+        echo "✅ Syntaxes directory exists"
+
+        test -d Commands/ || echo "⚠️  Commands directory missing"
+        test -d Snippets/ || echo "⚠️  Snippets directory missing"
+        test -d Preferences/ || echo "⚠️  Preferences directory missing"
+
+        echo "Bundle structure validation complete"
+
+    - name: Check syntax files
+      run: |
+        echo "Checking syntax files..."
+
+        if [ -d "Syntaxes/" ]; then
+          syntax_files=$(find Syntaxes/ -name "*.tmLanguage" -o -name "*.json" -o -name "*.yaml" -o -name "*.yml" | wc -l)
+
+          if [ "$syntax_files" -eq 0 ]; then
+            echo "❌ No syntax files found in Syntaxes directory"
+            exit 1
+          fi
+
+          echo "✅ Found $syntax_files syntax file(s)"
+
+          # List syntax files for visibility
+          find Syntaxes/ -name "*.tmLanguage" -o -name "*.json" -o -name "*.yaml" -o -name "*.yml" | while read file; do
+            echo "  - $file"
+
+            # Basic file validation
+            if [ ! -s "$file" ]; then
+              echo "❌ Empty syntax file: $file"
+              exit 1
+            fi
+          done
+        fi
+
+    - name: Summary
+      run: |
+        echo ""
+        echo "📋 Validation Summary:"
+        echo "✅ Bundle structure validated"
+        echo "✅ Syntax files verified"
+        echo ""
+        echo "🎯 Your BoxLang NeoVim Plugin looks good!"

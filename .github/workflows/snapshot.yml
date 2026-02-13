@@ -1,0 +1,42 @@
+name: Snapshots
+
+on:
+  push:
+    branches:
+      - development
+  workflow_dispatch:
+
+#Cancel running builds if another push to branch is made while this build is running
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  MODULE_ID: ${{ github.event.repository.name }}
+
+jobs:
+  #############################################
+  # Tests First baby! We fail, no build :(
+  #############################################
+  tests:
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: read
+      issues: read
+
+  #############################################
+  # Build Snapshot Release
+  #############################################
+  build:
+    uses: ./.github/workflows/release.yml
+    needs: [tests]
+    secrets: inherit
+    permissions:
+      checks: write
+      contents: write
+      packages: write
+    with:
+      snapshot: true
