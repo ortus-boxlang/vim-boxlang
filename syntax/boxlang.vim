@@ -42,6 +42,12 @@ syn match boxlangKeyword "\<contains\>"
 " Modifiers and visibility (distinct from keywords)
 syn keyword boxlangModifier public private remote package static abstract final class
 
+" Java Types and Exceptions
+syn keyword boxlangJavaType String Integer Boolean Double Float Long Byte Short Character Class Object System Math Thread Runnable
+syn keyword boxlangJavaType Date List Map Set Queue Stack ArrayList HashMap HashSet LinkedList TreeMap TreeSet
+syn keyword boxlangExceptions Exception Throwable Error RuntimeException IOException SQLException NullPointerException
+syn match boxlangExceptions "\<[A-Z]\w*Exception\>"
+
 " Types and special values
 syn keyword boxlangType any array binary boolean component date function
 syn keyword boxlangType guid numeric posdate query string struct uuid void xml
@@ -136,14 +142,17 @@ syn keyword boxlangTodo contained TODO FIXME XXX NOTE HACK
 " / COMMENTS }}}
 
 " STRINGS AND INTERPOLATION {{{
+" String special characters (escape sequences)
+syn match boxlangSpecialChar contained "\\\([0-3]\d\d\|[4-7]\d\|\d\|['\"\\ntbrf]\|u\x\{4\}\)"
+
 " String interpolation expression
-syn region boxlangInterpolation contained matchgroup=boxlangInterpolationDelim start="#" end="#" skip="##" contains=boxlangIdentifier,boxlangNumber,boxlangOperator,boxlangFunction
+syn region boxlangInterpolation contained matchgroup=boxlangInterpolationDelim start="#" end="#" skip="##" contains=boxlangIdentifier,boxlangNumber,boxlangOperator,boxlangMethodCall
 
 " Single-quoted string
-syn region boxlangStringSingle matchgroup=boxlangStringDelim start=+'+ skip=+''+ end=+'+ contains=boxlangInterpolation
+syn region boxlangStringSingle matchgroup=boxlangStringDelim start=+'+ skip=+''+ end=+'+ contains=boxlangInterpolation,boxlangSpecialChar
 
 " Double-quoted string
-syn region boxlangStringDouble matchgroup=boxlangStringDelim start=+"+ skip=+""+ end=+"+ contains=boxlangInterpolation
+syn region boxlangStringDouble matchgroup=boxlangStringDelim start=+"+ skip=+""+ end=+"+ contains=boxlangInterpolation,boxlangSpecialChar
 
 " Escaped hash mark
 syn match boxlangEscapedHash "##"
@@ -151,16 +160,17 @@ syn match boxlangEscapedHash "##"
 
 " NUMBERS {{{
 " Hexadecimal
-syn match boxlangNumber "\<0[xX]\x\+\>"
+syn match boxlangNumber "\v<0x[0-9a-fA-F_]+>"
 
-" Scientific notation
-syn match boxlangNumber "\<\d\+\(\.\d\+\)\?[eE][-+]\?\d\+\>"
+" Binary
+syn match boxlangNumber "\v<0b[01_]+>"
 
-" Floating point
-syn match boxlangNumber "\<\d\+\.\d\+\>"
+" Octal
+syn match boxlangNumber "\v<0[0-7_]+>"
 
-" Integer
-syn match boxlangNumber "\<\d\+\>"
+" Scientific, Floating Point, Integer with suffixes
+syn match boxlangNumber "\v<\d[0-9_]*(\.[0-9_]+)?([eE][-+]?\d+)?[fFdD]?>"
+syn match boxlangNumber "\v<\d[0-9_]*[lL]?>"
 " / NUMBERS }}}
 
 " FUNCTIONS {{{
@@ -170,8 +180,11 @@ syn keyword boxlangFunctionKeyword function nextgroup=boxlangFunctionName skipwh
 " Function name in definition
 syn match boxlangFunctionName contained "\w\+" nextgroup=boxlangFunctionParams skipwhite
 
-" Function call
-syn match boxlangFunction "\<\w\+\ze\s*("
+" Method Call (e.g., object.method())
+syn match boxlangMethodCall "\.\s*\zs\w\+\ze\s*("
+
+" Global Function Call (e.g., print())
+syn match boxlangFunctionCall "\<\w\+\ze\s*("
 
 " Arrow function
 syn match boxlangArrowFunction "=>\|=>"
@@ -304,6 +317,7 @@ hi def link boxlangStringDelim Delimiter
 hi def link boxlangInterpolation PreProc
 hi def link boxlangInterpolationDelim Delimiter
 hi def link boxlangEscapedHash SpecialChar
+hi def link boxlangSpecialChar SpecialChar
 
 " Numbers
 hi def link boxlangNumber Number
@@ -311,9 +325,14 @@ hi def link boxlangNumber Number
 " Functions
 hi def link boxlangFunctionKeyword Keyword
 hi def link boxlangFunctionName Function
-hi def link boxlangFunction Function
+hi def link boxlangMethodCall Function
+hi def link boxlangFunctionCall Function
 hi def link boxlangArrowFunction Special
 hi def link boxlangLambdaFunction Special
+
+" Java Types and Exceptions
+hi def link boxlangJavaType Type
+hi def link boxlangExceptions Exception
 
 " Annotations (distinct colors for visibility)
 hi def link boxlangAnnotation PreProc
