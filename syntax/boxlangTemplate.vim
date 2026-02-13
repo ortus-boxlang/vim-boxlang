@@ -81,7 +81,25 @@ syn match boxlangAttrName contained "\<\w\+\ze\s*="
 " Tag attribute value (can contain expressions)
 syn region boxlangAttrValue contained start=+"+ skip=+""+ end=+"+ contains=boxlangExpression
 syn region boxlangAttrValue contained start=+'+ skip=+''+ end=+'+ contains=boxlangExpression
-" / BX: TAGS }}}
+" / BOX: TAGS }}}
+
+" HTML TAGS {{{
+" Basic HTML tag highlighting (different from bx: tags)
+
+" HTML Tag Name - generic word
+syn match boxlangHtmlTagName contained "\v<\/*\zs\w+"
+
+" HTML Tag Start: matches <tag ... > but not <bx: ... >
+" Uses negative lookahead for bx:
+syn region boxlangHtmlTagStart keepend transparent start="\c<\(bx:\)\@!\w\+" end=">" contains=boxlangTagBracket,boxlangHtmlTagName,boxlangAttrName,boxlangAttrValue,boxlangExpression,boxlangTemplateComment
+
+" HTML Tag End: matches </tag> but not </bx: ... >
+syn match boxlangHtmlTagEnd transparent "\c</\(bx:\)\@!\w\+>" contains=boxlangTagBracket,boxlangHtmlTagName
+
+" HTML Comments <!-- ... -->
+" Use negative lookahead to avoid matching BoxLang comments <!--- ... --->
+syn region boxlangHtmlComment start="<!--\(-\)\@!" end="-->" contains=boxlangTodo
+" / HTML TAGS }}}
 
 " TAG REGIONS FOR FOLDING {{{
 " These define foldable regions for common block tags
@@ -135,6 +153,7 @@ syn region boxlangScriptBlock matchgroup=boxlangTagName start="\c<bx:script\>" e
 " Template comments
 hi def link boxlangTemplateComment Comment
 hi def link boxlangTodo Todo
+hi def link boxlangHtmlComment Comment
 
 " Expression interpolation
 hi def link boxlangExpression PreProc
@@ -143,6 +162,7 @@ hi def link boxlangEscapedHash SpecialChar
 
 " Tags
 hi def link boxlangTagName Identifier
+hi def link boxlangHtmlTagName Function
 hi def link boxlangTagBracket Delimiter
 hi def link boxlangTagSlash Delimiter
 hi def link boxlangAttrName Type
