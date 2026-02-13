@@ -89,12 +89,18 @@ syn region boxlangAttrValue contained start=+'+ skip=+''+ end=+'+ contains=boxla
 " HTML Tag Name - generic word
 syn match boxlangHtmlTagName contained "\v<\/*\zs\w+"
 
+" HTML Special Tag Names (Doctype handled separately)
+syn match boxlangHtmlSpecialTagName contained "\v<\/*\zs(html|head|body|style|script|link)\c"
+
+" HTML Doctype
+syn match boxlangHtmlDoctype "\c<!DOCTYPE\_[^>]*>"
+
 " HTML Tag Start: matches <tag ... > but not <bx: ... >
 " Uses negative lookahead for bx:
-syn region boxlangHtmlTagStart keepend transparent start="\c<\(bx:\)\@!\w\+" end=">" contains=boxlangTagBracket,boxlangHtmlTagName,boxlangAttrName,boxlangAttrValue,boxlangExpression,boxlangTemplateComment
+syn region boxlangHtmlTagStart keepend transparent start="\c<\(bx:\)\@!\w\+" end=">" contains=boxlangTagBracket,boxlangHtmlSpecialTagName,boxlangHtmlTagName,boxlangAttrName,boxlangAttrValue,boxlangExpression,boxlangTemplateComment
 
 " HTML Tag End: matches </tag> but not </bx: ... >
-syn match boxlangHtmlTagEnd transparent "\c</\(bx:\)\@!\w\+>" contains=boxlangTagBracket,boxlangHtmlTagName
+syn match boxlangHtmlTagEnd transparent "\c</\(bx:\)\@!\w\+>" contains=boxlangTagBracket,boxlangHtmlSpecialTagName,boxlangHtmlTagName
 
 " HTML Comments <!-- ... -->
 " Use negative lookahead to avoid matching BoxLang comments <!--- ... --->
@@ -163,6 +169,8 @@ hi def link boxlangEscapedHash SpecialChar
 " Tags
 hi def link boxlangTagName Identifier
 hi def link boxlangHtmlTagName Function
+hi def link boxlangHtmlSpecialTagName Structure
+hi def link boxlangHtmlDoctype PreProc
 hi def link boxlangTagBracket Delimiter
 hi def link boxlangTagSlash Delimiter
 hi def link boxlangAttrName Type
