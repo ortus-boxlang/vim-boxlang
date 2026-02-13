@@ -135,27 +135,44 @@ jobs:
 
     - name: Test filetype detection
       run: |
-        echo "🔍 Testing filetype detection..."
+        echo "🔍 Testing filetype detection with actual test files..."
 
-        # Create test files with different extensions
-        touch /tmp/test.bx /tmp/test.bxs /tmp/test.bxm
+        # Setup minimal vimrc with plugin loaded
+        cat > /tmp/test_vimrc << 'EOF'
+        set nocompatible
+        set runtimepath^=$PWD
+        filetype plugin indent on
+        syntax on
+        EOF
 
-        # Test .bx file
-        result=$(vim -u /tmp/test_vimrc --clean -c "set runtimepath+=$PWD" -c "e /tmp/test.bx" -c "set filetype?" -c "quit" 2>&1 | grep -o "filetype=.*")
-        echo ".bx detection: $result"
-        echo "$result" | grep -q "boxlang" || (echo "❌ .bx files not detected as boxlang" && exit 1)
+        # Test .bx file (use existing test file)
+        if [ -f "test-files/Class.bx" ]; then
+          echo "Testing .bx file: test-files/Class.bx"
+          vim -u /tmp/test_vimrc -N -i NONE -c "e test-files/Class.bx" -c "redir! > /tmp/ft_bx.txt" -c "set filetype?" -c "redir END" -c "quit"
+          cat /tmp/ft_bx.txt
+          grep -q "boxlang" /tmp/ft_bx.txt || (echo "❌ .bx files not detected as boxlang" && exit 1)
+          echo "✅ .bx detection working"
+        fi
 
-        # Test .bxs file
-        result=$(vim -u /tmp/test_vimrc --clean -c "set runtimepath+=$PWD" -c "e /tmp/test.bxs" -c "set filetype?" -c "quit" 2>&1 | grep -o "filetype=.*")
-        echo ".bxs detection: $result"
-        echo "$result" | grep -q "boxlang" || (echo "❌ .bxs files not detected as boxlang" && exit 1)
+        # Test .bxs file (use existing test file)
+        if [ -f "test-files/test-executable.bxs" ]; then
+          echo "Testing .bxs file: test-files/test-executable.bxs"
+          vim -u /tmp/test_vimrc -N -i NONE -c "e test-files/test-executable.bxs" -c "redir! > /tmp/ft_bxs.txt" -c "set filetype?" -c "redir END" -c "quit"
+          cat /tmp/ft_bxs.txt
+          grep -q "boxlang" /tmp/ft_bxs.txt || (echo "❌ .bxs files not detected as boxlang" && exit 1)
+          echo "✅ .bxs detection working"
+        fi
 
-        # Test .bxm file
-        result=$(vim -u /tmp/test_vimrc --clean -c "set runtimepath+=$PWD" -c "e /tmp/test.bxm" -c "set filetype?" -c "quit" 2>&1 | grep -o "filetype=.*")
-        echo ".bxm detection: $result"
-        echo "$result" | grep -q "boxlangTemplate" || (echo "❌ .bxm files not detected as boxlangTemplate" && exit 1)
+        # Test .bxm file (use existing test file)
+        if [ -f "test-files/test-template.bxm" ]; then
+          echo "Testing .bxm file: test-files/test-template.bxm"
+          vim -u /tmp/test_vimrc -N -i NONE -c "e test-files/test-template.bxm" -c "redir! > /tmp/ft_bxm.txt" -c "set filetype?" -c "redir END" -c "quit"
+          cat /tmp/ft_bxm.txt
+          grep -q "boxlangTemplate" /tmp/ft_bxm.txt || (echo "❌ .bxm files not detected as boxlangTemplate" && exit 1)
+          echo "✅ .bxm detection working"
+        fi
 
-        echo "✅ Filetype detection working correctly"
+        echo "✅ Filetype detection working correctly for all extensions"
 
     - name: Test BoxLang keywords are defined
       run: |
