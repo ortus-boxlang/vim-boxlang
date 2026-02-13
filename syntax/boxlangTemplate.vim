@@ -110,7 +110,7 @@ syn region boxlangHtmlComment start="<!--\(-\)\@!" end="-->" contains=boxlangTod
 " TAG REGIONS FOR FOLDING {{{
 " These define foldable regions for common block tags
 " Define a cluster of what can be in template content
-syn cluster boxlangTemplateContent contains=boxlangTemplateComment,boxlangExpression,boxlangTagStart,boxlangTagEnd
+syn cluster boxlangTemplateContent contains=boxlangTemplateComment,boxlangExpression,boxlangTagStart,boxlangTagEnd,boxlangHtmlTagStart,boxlangHtmlTagEnd,boxlangHtmlComment,boxlangHtmlDoctype
 
 " <bx:if> ... </bx:if>
 syn region boxlangIfRegion transparent fold start="\c<bx:if\>" end="\c</bx:if>" contains=@boxlangTemplateContent,boxlangIfRegion,boxlangOutputRegion,boxlangForRegion,boxlangWhileRegion,boxlangSwitchRegion,boxlangTryRegion
