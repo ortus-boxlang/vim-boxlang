@@ -10,6 +10,7 @@ Vim syntax highlighting for BoxLang - a dynamic JVM language and runtime.
   - [BoxLang Script Syntax (`.bx`, `.bxs`)](#boxlang-script-syntax-bx-bxs)
   - [BoxLang Template Syntax (`.bxm`)](#boxlang-template-syntax-bxm)
 - [⚡ Installation](#-installation)
+  - [Using lazy.nvim (Lua)](#using-lazynvim-lua)
   - [Using vim-plug](#using-vim-plug)
   - [Using Vundle](#using-vundle)
   - [Using Pathogen](#using-pathogen)
@@ -31,6 +32,10 @@ Vim syntax highlighting for BoxLang - a dynamic JVM language and runtime.
 - [🔗 Related Projects](#-related-projects)
 
 ## 📖 Overview
+
+<div class="text-center">
+<img src="vim-boxlang-class.png">
+</div>
 
 This plugin provides comprehensive syntax highlighting for BoxLang script files (`.bx`, `.bxs`) and template files (`.bxm`). It includes support for:
 
