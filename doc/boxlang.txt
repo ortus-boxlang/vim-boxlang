@@ -1,0 +1,119 @@
+*boxlang.txt*    For Vim version 9.0.    Last change: 2026 Feb 13
+
+                VIM BOXLANG SYNTAX SUPPORT ~
+                                                          *boxlang* *vim-boxlang*
+
+BoxLang is a modern dynamic JVM language. This plugin provides syntax
+highlighting, filetype detection, and support for BoxLang script (*.bx*, *.bxs*)
+and template (*.bxm*) files.
+
+==============================================================================
+CONTENTS                                                   *boxlang-contents*
+
+1. Introduction .............................. |boxlang-intro|
+2. Installation .............................. |boxlang-install|
+3. Features .................................. |boxlang-features|
+4. Configuration ............................. |boxlang-config|
+5. Troubleshooting ........................... |boxlang-trouble|
+6. License ................................... |boxlang-license|
+
+==============================================================================
+1. INTRODUCTION                                                *boxlang-intro*
+
+This plugin provides comprehensive syntax highlighting for BoxLang, a dynamic
+language for the JVM. It supports two distinct syntax modes:
+
+*Script Syntax* (*.bx*, *.bxs*):
+Pure BoxLang script files, supporting modern features like classes,
+interfaces, lambda/arrow functions, static referencing, and BoxLang-specific
+operators (bitwise, strict equality, etc.).
+
+*Template Syntax* (*.bxm*):
+Tag-based markup syntax. This includes support for:
+- <bx:> tags (components, logic, output)
+- HTML markup (with custom highlighting for structure tags)
+- Expression interpolation (#...#)
+- Embedded script blocks (<bx:script>)
+
+==============================================================================
+2. INSTALLATION                                              *boxlang-install*
+
+You can install this plugin using your favorite Vim plugin manager.
+
+*vim-plug*
+add the following to your .vimrc or init.vim: >
+    Plug 'ortus-boxlang/vim-boxlang'
+<
+
+*Packer*
+add the following to your plugin specification: >
+    use 'ortus-boxlang/vim-boxlang'
+<
+
+*Manual*
+Copy the contents of the detected `syntax` and `ftdetect` folders into your
+`~/.vim/` directory (or `~/.config/nvim/` for Neovim).
+
+==============================================================================
+3. FEATURES                                                 *boxlang-features*
+
+The syntax files provide detailed highlighting groups that can be customized
+by your color scheme.
+
+*Script Highlighting*
+- Keywords: class, interface, final, abstract, etc.
+- BoxLang Operators: `b|`, `b&` (bitwise), `===` (strict equality), `?:`
+- String Interpolation: Variables inside `#...#` are highlighted.
+- JavaDoc comments (`/** ... */`) are fully supported.
+
+*Template Highlighting*
+- Template Tags: `<bx:...>` tags are highlighted distinctively.
+- HTML Support:
+  - Doftype declarations (*PreProc*)
+  - Structure tags (`html`, `head`, `body`) (*Structure*)
+  - Other tags (`div`, `span`, etc.) (*Function*)
+- Cross-language support: Writing `<bx:script>` automatically switches
+  highlighting rules to Script mode.
+
+==============================================================================
+4. CONFIGURATION                                              *boxlang-config*
+
+The plugin mostly works out of the box. However, ensure that your Vim has
+syntax enabling turned on:
+>
+    syntax on
+    filetype plugin indent on
+<
+
+Files are automatically detected:
+- *.bx, *.bxs -> `boxlang` filetype
+- *.bxm       -> `boxlangTemplate` filetype
+
+If detection fails, you can set it manually: >
+    :set filetype=boxlang
+<
+
+==============================================================================
+5. TROUBLESHOOTING                                           *boxlang-trouble*
+
+*Colors look wrong or missing*
+BoxLang uses standard Vim highlight groups (Statement, Identifier, Type, etc.).
+If colors look odd, try switching your colorscheme: >
+    :colorscheme desert
+<
+Ensure you refer to |syntax-highlighting| for how syntax groups map to colors.
+
+*HTML tags inside templates*
+The template syntax uses a custom lightweight HTML parser to avoid conflicts
+with `<bx:` tags. It distinguishes between standard HTML tags and special
+structure tags like `<html>` or `<body>`.
+
+==============================================================================
+6. LICENSE                                                   *boxlang-license*
+
+This plugin is licensed under the Apache 2.0 License.
+Copyright (c) Ortus Solutions, Corp.
+
+See https://github.com/ortus-boxlang/vim-boxlang for source and issues.
+
+ vim:tw=78:ts=8:ft=help:norl:

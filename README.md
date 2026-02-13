@@ -63,7 +63,11 @@ This plugin provides comprehensive syntax highlighting for BoxLang script files 
 
 ### BoxLang Template Syntax (`.bxm`)
 
-- **HTML Support**: Full HTML syntax highlighting via vim's built-in html.vim
+- **HTML Support**: Custom lightweight HTML syntax highlighting
+  - Multi-color support: Distinct colors for special tags (`html`, `head`, `body`, `script`, `style`, `link`) vs standard tags
+  - `DOCTYPE` highlighting
+  - Full HTML comments support `<!-- -->`
+  - Integration within BoxLang tags
 - **bx: Tags**: Native BoxLang component tags
   - Control flow: `<bx:if>`, `<bx:elseif>`, `<bx:else>`, `<bx:for>`, `<bx:while>`, `<bx:switch>`, `<bx:case>`
   - Output: `<bx:output>`
@@ -78,6 +82,22 @@ This plugin provides comprehensive syntax highlighting for BoxLang script files 
 - **Code Folding**: Automatic folding for tag regions
 
 ## ⚡ Installation
+
+### Using [lazy.nvim](https://github.com/folke/lazy.nvim) (Lua)
+
+Add this to your plugin configuration (e.g., `lua/plugins/boxlang.lua`):
+
+```lua
+return {
+  {
+    "ortus-boxlang/vim-boxlang",
+    ft = { "boxlang", "boxlangTemplate" }, -- Optional: lazy load on filetype
+    init = function()
+       -- Any custom configuration here
+    end,
+  }
+}
+```
 
 ### Using [vim-plug](https://github.com/junegunn/vim-plug)
 
