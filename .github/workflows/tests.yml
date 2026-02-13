@@ -8,7 +8,7 @@ on:
         required: false
         type: string
         default: ''
-    # Allow manual triggering
+  # Allow manual triggering
   workflow_dispatch:
 
 jobs:
@@ -21,55 +21,170 @@ jobs:
       with:
         ref: ${{ inputs.checkout-ref }}
 
-    - name: Check required files exist
+    - name: Install Vim
       run: |
-        echo "Checking bundle structure..."
+        sudo apt-get update
+        sudo apt-get install -y vim
 
-        # Check main bundle file
-        test -f info.plist || (echo "❌ Missing info.plist" && exit 1)
-        echo "✅ info.plist exists"
-
-        # Check main directories
-        test -d Syntaxes/ || (echo "❌ Missing Syntaxes directory" && exit 1)
-        echo "✅ Syntaxes directory exists"
-
-        test -d Commands/ || echo "⚠️  Commands directory missing"
-        test -d Snippets/ || echo "⚠️  Snippets directory missing"
-        test -d Preferences/ || echo "⚠️  Preferences directory missing"
-
-        echo "Bundle structure validation complete"
-
-    - name: Check syntax files
+    - name: Check plugin structure
       run: |
-        echo "Checking syntax files..."
+        echo "🔍 Checking Vim plugin structure..."
 
-        if [ -d "Syntaxes/" ]; then
-          syntax_files=$(find Syntaxes/ -name "*.tmLanguage" -o -name "*.json" -o -name "*.yaml" -o -name "*.yml" | wc -l)
+        # Check required directories
+        test -d syntax/ || (echo "❌ Missing syntax/ directory" && exit 1)
+        echo "✅ syntax/ directory exists"
 
-          if [ "$syntax_files" -eq 0 ]; then
-            echo "❌ No syntax files found in Syntaxes directory"
-            exit 1
-          fi
+        test -d ftdetect/ || (echo "❌ Missing ftdetect/ directory" && exit 1)
+        echo "✅ ftdetect/ directory exists"
 
-          echo "✅ Found $syntax_files syntax file(s)"
+        test -d test-files/ || (echo "❌ Missing test-files/ directory" && exit 1)
+        echo "✅ test-files/ directory exists"
 
-          # List syntax files for visibility
-          find Syntaxes/ -name "*.tmLanguage" -o -name "*.json" -o -name "*.yaml" -o -name "*.yml" | while read file; do
-            echo "  - $file"
+        # Check required syntax files
+        test -f syntax/boxlang.vim || (echo "❌ Missing syntax/boxlang.vim" && exit 1)
+        echo "✅ syntax/boxlang.vim exists"
 
-            # Basic file validation
-            if [ ! -s "$file" ]; then
-              echo "❌ Empty syntax file: $file"
+        test -f syntax/boxlangTemplate.vim || (echo "❌ Missing syntax/boxlangTemplate.vim" && exit 1)
+        echo "✅ syntax/boxlangTemplate.vim exists"
+
+        # Check ftdetect file
+        test -f ftdetect/boxlang.vim || (echo "❌ Missing ftdetect/boxlang.vim" && exit 1)
+        echo "✅ ftdetect/boxlang.vim exists"
+
+        echo "✅ Plugin structure validated"
+
+    - name: Validate syntax files are not empty
+      run: |
+        echo "🔍 Validating syntax file contents..."
+
+        # Check files are not empty
+        test -s syntax/boxlang.vim || (echo "❌ syntax/boxlang.vim is empty" && exit 1)
+        test -s syntax/boxlangTemplate.vim || (echo "❌ syntax/boxlangTemplate.vim is empty" && exit 1)
+        test -s ftdetect/boxlang.vim || (echo "❌ ftdetect/boxlang.vim is empty" && exit 1)
+
+        echo "✅ All syntax files have content"
+
+    - name: Validate Vim syntax definitions
+      run: |
+        echo "🔍 Validating Vim syntax definitions..."
+
+        # Check for required syntax file headers
+        grep -q "Vim syntax file" syntax/boxlang.vim || (echo "❌ Missing Vim syntax file header in boxlang.vim" && exit 1)
+        grep -q "Vim syntax file" syntax/boxlangTemplate.vim || (echo "❌ Missing Vim syntax file header in boxlangTemplate.vim" && exit 1)
+
+        # Check for b:current_syntax guard
+        grep -q 'if exists("b:current_syntax")' syntax/boxlang.vim || (echo "❌ Missing current_syntax guard in boxlang.vim" && exit 1)
+        grep -q 'if exists("b:current_syntax")' syntax/boxlangTemplate.vim || (echo "❌ Missing current_syntax guard in boxlangTemplate.vim" && exit 1)
+
+        # Check for syn case ignore (BoxLang is case-insensitive)
+        grep -q "syn case ignore" syntax/boxlang.vim || (echo "❌ Missing 'syn case ignore' in boxlang.vim" && exit 1)
+        grep -q "syn case ignore" syntax/boxlangTemplate.vim || (echo "❌ Missing 'syn case ignore' in boxlangTemplate.vim" && exit 1)
+
+        # Check for syntax groups definition
+        grep -q "syn keyword\|syn match\|syn region" syntax/boxlang.vim || (echo "❌ No syntax definitions found in boxlang.vim" && exit 1)
+        grep -q "syn keyword\|syn match\|syn region" syntax/boxlangTemplate.vim || (echo "❌ No syntax definitions found in boxlangTemplate.vim" && exit 1)
+
+        echo "✅ Syntax definitions validated"
+
+    - name: Validate ftdetect patterns
+      run: |
+        echo "🔍 Validating filetype detection..."
+
+        # Check for BoxLang script extensions (.bx, .bxs)
+        grep -q "\.bx" ftdetect/boxlang.vim || (echo "❌ Missing .bx extension detection" && exit 1)
+        grep -q "\.bxs" ftdetect/boxlang.vim || (echo "❌ Missing .bxs extension detection" && exit 1)
+
+        # Check for BoxLang template extension (.bxm)
+        grep -q "\.bxm" ftdetect/boxlang.vim || (echo "❌ Missing .bxm extension detection" && exit 1)
+
+        # Check for setfiletype commands
+        grep -q "setfiletype boxlang" ftdetect/boxlang.vim || (echo "❌ Missing setfiletype boxlang command" && exit 1)
+        grep -q "setfiletype boxlangTemplate" ftdetect/boxlang.vim || (echo "❌ Missing setfiletype boxlangTemplate command" && exit 1)
+
+        echo "✅ Filetype detection validated"
+
+    - name: Test syntax files load without errors
+      run: |
+        echo "🔍 Testing syntax files load in Vim..."
+
+        # Create a temporary vimrc
+        cat > /tmp/test_vimrc << 'EOF'
+        set nocompatible
+        set runtimepath+=$PWD
+        filetype plugin indent on
+        syntax on
+        EOF
+
+        # Test each test file
+        for file in test-files/*.bx test-files/*.bxs test-files/*.bxm; do
+          if [ -f "$file" ]; then
+            echo "Testing: $file"
+            # Open file in Vim, load syntax, and quit
+            # If there are syntax errors, Vim will exit with non-zero
+            vim -u /tmp/test_vimrc -e -s -c "set verbose=1" -c "e $file" -c "syntax on" -c "quit" 2>&1 | tee /tmp/vim_output
+
+            # Check for error messages
+            if grep -i "error" /tmp/vim_output; then
+              echo "❌ Syntax errors found when loading $file"
               exit 1
             fi
-          done
-        fi
+          fi
+        done
+
+        echo "✅ All syntax files load without errors"
+
+    - name: Test filetype detection
+      run: |
+        echo "🔍 Testing filetype detection..."
+
+        # Create test files with different extensions
+        touch /tmp/test.bx /tmp/test.bxs /tmp/test.bxm
+
+        # Test .bx file
+        result=$(vim -u /tmp/test_vimrc --clean -c "set runtimepath+=$PWD" -c "e /tmp/test.bx" -c "set filetype?" -c "quit" 2>&1 | grep -o "filetype=.*")
+        echo ".bx detection: $result"
+        echo "$result" | grep -q "boxlang" || (echo "❌ .bx files not detected as boxlang" && exit 1)
+
+        # Test .bxs file
+        result=$(vim -u /tmp/test_vimrc --clean -c "set runtimepath+=$PWD" -c "e /tmp/test.bxs" -c "set filetype?" -c "quit" 2>&1 | grep -o "filetype=.*")
+        echo ".bxs detection: $result"
+        echo "$result" | grep -q "boxlang" || (echo "❌ .bxs files not detected as boxlang" && exit 1)
+
+        # Test .bxm file
+        result=$(vim -u /tmp/test_vimrc --clean -c "set runtimepath+=$PWD" -c "e /tmp/test.bxm" -c "set filetype?" -c "quit" 2>&1 | grep -o "filetype=.*")
+        echo ".bxm detection: $result"
+        echo "$result" | grep -q "boxlangTemplate" || (echo "❌ .bxm files not detected as boxlangTemplate" && exit 1)
+
+        echo "✅ Filetype detection working correctly"
+
+    - name: Test BoxLang keywords are defined
+      run: |
+        echo "🔍 Checking BoxLang-specific syntax definitions..."
+
+        # Check for BoxLang keywords (not CFML)
+        grep -q "class" syntax/boxlang.vim || (echo "❌ Missing 'class' keyword" && exit 1)
+        grep -q "interface" syntax/boxlang.vim || (echo "❌ Missing 'interface' keyword" && exit 1)
+
+        # Check for BoxLang operators
+        grep -q "b|" syntax/boxlang.vim || (echo "❌ Missing bitwise OR operator" && exit 1)
+        grep -q "===" syntax/boxlang.vim || (echo "❌ Missing strict equality operator" && exit 1)
+
+        # Check for template tags with bx: prefix
+        grep -q "bx:" syntax/boxlangTemplate.vim || (echo "❌ Missing bx: tag prefix in template syntax" && exit 1)
+
+        echo "✅ BoxLang-specific syntax definitions present"
 
     - name: Summary
       run: |
         echo ""
-        echo "📋 Validation Summary:"
-        echo "✅ Bundle structure validated"
-        echo "✅ Syntax files verified"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "📋 Vim Plugin Validation Summary:"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "✅ Plugin structure validated"
+        echo "✅ Syntax files are valid Vim syntax files"
+        echo "✅ Filetype detection configured correctly"
+        echo "✅ Syntax files load without errors"
+        echo "✅ BoxLang-specific features defined"
         echo ""
-        echo "🎯 Your BoxLang NeoVim Plugin looks good!"
+        echo "🎉 vim-boxlang plugin is valid!"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
