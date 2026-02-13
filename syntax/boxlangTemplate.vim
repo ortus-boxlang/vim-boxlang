@@ -9,6 +9,7 @@
 " Filenames:    *.bxm
 " Description:  Syntax highlighting for BoxLang template files (.bxm)
 "               Supports bx: tags, HTML markup, and embedded script blocks
+"               no html.vim inclusion for performance
 
 " Quit when a syntax file was already loaded.
 if exists("b:current_syntax")
@@ -22,10 +23,20 @@ set cpo&vim
 " BoxLang templates are case-insensitive
 syn case ignore
 
+" Include BoxLang script syntax for use in expressions and script blocks
+" Guard against infinite recursion
+if !exists("b:boxlang_include_depth")
+  let b:boxlang_include_depth = 0
+endif
+
+if b:boxlang_include_depth < 1
+  let b:boxlang_include_depth += 1
+  syn include @boxlangScript syntax/boxlang.vim
+  unlet! b:current_syntax
+  let b:boxlang_include_depth -= 1
+endif
+
 " Don't include HTML syntax - it causes conflicts and performance issues
-" Disabled include html highlighting as it
-" contains huge keywords regex, so it will have impact on performance.
-" Use own simple SGML tag coloring instead."
 syn sync fromstart
 
 " TEMPLATE COMMENTS {{{
@@ -38,15 +49,15 @@ syn keyword boxlangTodo contained TODO FIXME XXX NOTE HACK
 
 " EXPRESSION INTERPOLATION {{{
 " Hash-delimited expressions in template text (#variable.name#)
-syn region boxlangExpression matchgroup=boxlangExpressionDelim start="#" end="#" skip="##" keepend oneline contains=boxlangIdentifier,boxlangNumber,boxlangOperator,boxlangFunction,boxlangScope,boxlangDot,boxlangKeyword,boxlangBoolean,boxlangNull
+" Use @boxlangScript cluster for all expression syntax
+syn region boxlangExpression matchgroup=boxlangExpressionDelim start="#" end="#" skip="##" keepend oneline contains=@boxlangScript
 
 " Escaped hash mark (##)
 syn match boxlangEscapedHash "##"
 " / EXPRESSION INTERPOLATION }}}
 
 " BX: TAGS {{{
-" Following ColdFusion's approach: simple transparent regions with contained matches
-" No containedin=ALL - let the regions work naturally
+" simple transparent regions with contained matches
 
 " Tag start region: <bx:tagname attr="value">
 syn region boxlangTagStart keepend transparent start="\c<bx:\w\+" end=">" contains=boxlangTagBracket,boxlangTagName,boxlangAttrName,boxlangAttrValue,boxlangExpression,boxlangTemplateComment
@@ -74,101 +85,51 @@ syn region boxlangAttrValue contained start=+'+ skip=+''+ end=+'+ contains=boxla
 
 " TAG REGIONS FOR FOLDING {{{
 " These define foldable regions for common block tags
+" Define a cluster of what can be in template content
+syn cluster boxlangTemplateContent contains=boxlangTemplateComment,boxlangExpression,boxlangTagStart,boxlangTagEnd
+
 " <bx:if> ... </bx:if>
-syn region boxlangIfRegion transparent fold start="\c<bx:if\>" end="\c</bx:if>" contains=ALL
+syn region boxlangIfRegion transparent fold start="\c<bx:if\>" end="\c</bx:if>" contains=@boxlangTemplateContent,boxlangIfRegion,boxlangOutputRegion,boxlangForRegion,boxlangWhileRegion,boxlangSwitchRegion,boxlangTryRegion
 
 " <bx:output> ... </bx:output>
-syn region boxlangOutputRegion transparent fold start="\c<bx:output\>" end="\c</bx:output>" contains=ALL
+syn region boxlangOutputRegion transparent fold start="\c<bx:output\>" end="\c</bx:output>" contains=@boxlangTemplateContent,boxlangIfRegion,boxlangForRegion,boxlangWhileRegion
 
 " <bx:function> ... </bx:function>
-syn region boxlangFunctionRegion transparent fold start="\c<bx:function\>" end="\c</bx:function>" contains=ALL
+syn region boxlangFunctionRegion transparent fold start="\c<bx:function\>" end="\c</bx:function>" contains=@boxlangTemplateContent,boxlangIfRegion,boxlangOutputRegion,boxlangForRegion,boxlangWhileRegion,boxlangTryRegion
 
 " <bx:try> ... </bx:try>
-syn region boxlangTryRegion transparent fold start="\c<bx:try\>" end="\c</bx:try>" contains=ALL
+syn region boxlangTryRegion transparent fold start="\c<bx:try\>" end="\c</bx:try>" contains=@boxlangTemplateContent,boxlangIfRegion,boxlangOutputRegion,boxlangForRegion
 
 " <bx:for> ... </bx:for>
-syn region boxlangForRegion transparent fold start="\c<bx:for\>" end="\c</bx:for>" contains=ALL
+syn region boxlangForRegion transparent fold start="\c<bx:for\>" end="\c</bx:for>" contains=@boxlangTemplateContent,boxlangIfRegion,boxlangOutputRegion,boxlangForRegion
 
 " <bx:while> ... </bx:while>
-syn region boxlangWhileRegion transparent fold start="\c<bx:while\>" end="\c</bx:while>" contains=ALL
+syn region boxlangWhileRegion transparent fold start="\c<bx:while\>" end="\c</bx:while>" contains=@boxlangTemplateContent,boxlangIfRegion,boxlangOutputRegion
 
 " <bx:switch> ... </bx:switch>
-syn region boxlangSwitchRegion transparent fold start="\c<bx:switch\>" end="\c</bx:switch>" contains=ALL
+syn region boxlangSwitchRegion transparent fold start="\c<bx:switch\>" end="\c</bx:switch>" contains=@boxlangTemplateContent
 
 " <bx:component> ... </bx:component>
-syn region boxlangComponentRegion transparent fold start="\c<bx:component\>" end="\c</bx:component>" contains=ALL
+syn region boxlangComponentRegion transparent fold start="\c<bx:component\>" end="\c</bx:component>" contains=@boxlangTemplateContent,boxlangFunctionRegion
 
 " <bx:interface> ... </bx:interface>
-syn region boxlangInterfaceRegion transparent fold start="\c<bx:interface\>" end="\c</bx:interface>" contains=ALL
+syn region boxlangInterfaceRegion transparent fold start="\c<bx:interface\>" end="\c</bx:interface>" contains=@boxlangTemplateContent,boxlangFunctionRegion
 
 " <bx:lock> ... </bx:lock>
-syn region boxlangLockRegion transparent fold start="\c<bx:lock\>" end="\c</bx:lock>" contains=ALL
+syn region boxlangLockRegion transparent fold start="\c<bx:lock\>" end="\c</bx:lock>" contains=@boxlangTemplateContent,boxlangIfRegion,boxlangOutputRegion
 
 " <bx:thread> ... </bx:thread>
-syn region boxlangThreadRegion transparent fold start="\c<bx:thread\>" end="\c</bx:thread>" contains=ALL
+syn region boxlangThreadRegion transparent fold start="\c<bx:thread\>" end="\c</bx:thread>" contains=@boxlangTemplateContent,boxlangIfRegion,boxlangOutputRegion
 " / TAG REGIONS }}}
 
 " SCRIPT BLOCKS {{{
 " <bx:script> embedded script content
-" Include BoxLang script syntax within <bx:script> tags
-" Guard against infinite recursion when including script syntax
-if !exists("b:boxlang_include_depth")
-  let b:boxlang_include_depth = 0
-endif
-
-if b:boxlang_include_depth < 1
-  let b:boxlang_include_depth += 1
-  syn include @boxlangScript syntax/boxlang.vim
-  unlet! b:current_syntax
-  let b:boxlang_include_depth -= 1
-
-  syn region boxlangScriptBlock matchgroup=boxlangTagName start="\c<bx:script\>" end="\c</bx:script>" contains=@boxlangScript,boxlangTemplateComment fold keepend
-endif
+syn region boxlangScriptBlock matchgroup=boxlangTagName start="\c<bx:script\>" end="\c</bx:script>" contains=@boxlangScript,boxlangTemplateComment fold keepend
 " / SCRIPT BLOCKS }}}
 
-" BASIC SYNTAX ELEMENTS FOR EXPRESSIONS {{{
-" These are used within interpolated expressions
-syn keyword boxlangBoolean contained true false
-syn keyword boxlangNull contained null
-
-" Numbers
-syn match boxlangNumber contained "\<\d\+\>"
-syn match boxlangNumber contained "\<\d\+\.\d\+\>"
-syn match boxlangNumber contained "\<0[xX]\x\+\>"
-
-" Operators
-syn match boxlangOperator contained "\V+\|-\|*\|/\|%\|&\||\|!\|=\|<\|>\|?"
-syn match boxlangDot contained "\."
-
-" Keywords
-syn keyword boxlangKeyword contained and or not xor eq neq gt lt gte lte is
-syn keyword boxlangKeyword contained mod new
-
-" Keywords that conflict with vim syntax arguments
-syn match boxlangKeyword contained "\<contains\>"
-
-" Scopes (all BoxLang variable scopes)
-" Core function/class scopes
-syn keyword boxlangScope contained variables local arguments this static super
-" Persistence scopes
-syn keyword boxlangScope contained application session request server
-" Web-specific scopes
-syn keyword boxlangScope contained cgi form url cookie client
-" Thread scopes
-syn keyword boxlangScope contained thread bxThread
-" Special scopes
-syn keyword boxlangScope contained bxFile bxHttp attributes caller cfcatch
-
-" Function calls
-syn match boxlangFunction contained "\<\w\+\ze\s*("
-
-" Identifiers
-syn match boxlangIdentifier contained "\<\w\+\>"
-" / BASIC SYNTAX }}}
-
-" NOTE: HTML tags are not highlighted on purpose
-" Following ColdFusion's approach: no HTML matching to avoid conflicts
-" BoxLang tags (bx:*) and expressions are the focus
+" NOTE: HTML tags are not highlighted
+" no HTML matching to avoid conflicts and performance issues
+" BoxLang tags (bx:*) and expressions (#..#) are the focus of this syntax file
 
 " HIGHLIGHTING LINKS {{{
 " Template comments
@@ -186,17 +147,6 @@ hi def link boxlangTagBracket Delimiter
 hi def link boxlangTagSlash Delimiter
 hi def link boxlangAttrName Type
 hi def link boxlangAttrValue String
-
-" Basic syntax elements (for expressions)
-hi def link boxlangBoolean Boolean
-hi def link boxlangNull Constant
-hi def link boxlangNumber Number
-hi def link boxlangOperator Operator
-hi def link boxlangDot Operator
-hi def link boxlangKeyword Keyword
-hi def link boxlangScope Type
-hi def link boxlangFunction Function
-hi def link boxlangIdentifier Identifier
 " / HIGHLIGHTING }}}
 
 let b:current_syntax = "boxlangTemplate"
