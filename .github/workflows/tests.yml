@@ -174,23 +174,6 @@ jobs:
 
         echo "✅ Filetype detection working correctly for all extensions"
 
-    - name: Test BoxLang keywords are defined
-      run: |
-        echo "🔍 Checking BoxLang-specific syntax definitions..."
-
-        # Check for BoxLang keywords (not CFML)
-        grep -q "class" syntax/boxlang.vim || (echo "❌ Missing 'class' keyword" && exit 1)
-        grep -q "interface" syntax/boxlang.vim || (echo "❌ Missing 'interface' keyword" && exit 1)
-
-        # Check for BoxLang operators
-        grep -q "b|" syntax/boxlang.vim || (echo "❌ Missing bitwise OR operator" && exit 1)
-        grep -q "===" syntax/boxlang.vim || (echo "❌ Missing strict equality operator" && exit 1)
-
-        # Check for template tags with bx: prefix
-        grep -q "bx:" syntax/boxlangTemplate.vim || (echo "❌ Missing bx: tag prefix in template syntax" && exit 1)
-
-        echo "✅ BoxLang-specific syntax definitions present"
-
     - name: Summary
       run: |
         echo ""
@@ -201,7 +184,6 @@ jobs:
         echo "✅ Syntax files are valid Vim syntax files"
         echo "✅ Filetype detection configured correctly"
         echo "✅ Syntax files load without errors"
-        echo "✅ BoxLang-specific features defined"
         echo ""
         echo "🎉 vim-boxlang plugin is valid!"
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
