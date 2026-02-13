@@ -316,10 +316,10 @@ hi def link boxlangArrowFunction Special
 hi def link boxlangLambdaFunction Special
 
 " Annotations (distinct colors for visibility)
-hi def link boxlangAnnotation SpecialComment
-hi def link boxlangAnnotationName Macro
+hi def link boxlangAnnotation PreProc
+hi def link boxlangAnnotationName PreProc
 hi def link boxlangAnnotationKey Macro
-hi def link boxlangAnnotationSimple SpecialComment
+hi def link boxlangAnnotationSimple PreProc
 
 " Component Islands
 hi def link boxlangIslandDelim Special
