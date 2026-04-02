@@ -123,7 +123,7 @@ jobs:
         markdownlint changelog.md --fix
 
     - name: Commit Changelog [unreleased] with latest version
-      uses: EndBug/add-and-commit@v9.1.4
+      uses: EndBug/add-and-commit@v10.0.0
       if: env.SNAPSHOT == 'false'
       with:
         author_name: Github Actions
@@ -232,7 +232,7 @@ jobs:
           git pull
 
       - name: Commit Version Bump
-        uses: EndBug/add-and-commit@v9.1.4
+        uses: EndBug/add-and-commit@v10.0.0
         if: ${{ always() }}
         with:
           author_name: Github Actions
