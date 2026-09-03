@@ -210,7 +210,7 @@ jobs:
           ref: development
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: vim-boxlang
           path: .tmp
