@@ -3,7 +3,7 @@
 " Language:     BoxLang (Script)
 " Maintainer:   Ortus Solutions <info@ortussolutions.com>
 " URL:          https://github.com/ortus-solutions/vim-boxlang
-" Last Change:  2026 Feb 12
+" Last Change:  2026 Sep 03
 " License:      Apache 2.0
 "
 " Filenames:    *.bx *.bxs
@@ -44,7 +44,10 @@ syn keyword boxlangModifier public private remote package static abstract final 
 
 " Java Types and Exceptions
 syn keyword boxlangJavaType String Integer Boolean Double Float Long Byte Short Character Class Object System Math Thread Runnable
-syn keyword boxlangJavaType Date List Map Set Queue Stack ArrayList HashMap HashSet LinkedList TreeMap TreeSet
+syn keyword boxlangJavaType Date List Map Queue Stack ArrayList HashMap HashSet LinkedList TreeMap TreeSet
+" "Set" is matched separately, after boxlangIdentifier below (not as a
+" keyword), so the set{...} literal can still take priority over it when
+" immediately followed by '{' - see SOFT KEYWORDS below.
 syn keyword boxlangExceptions Exception Throwable Error RuntimeException IOException SQLException NullPointerException
 syn match boxlangExceptions "\<[A-Z]\w*Exception\>"
 
@@ -146,7 +149,7 @@ syn keyword boxlangTodo contained TODO FIXME XXX NOTE HACK
 syn match boxlangSpecialChar contained "\\\([0-3]\d\d\|[4-7]\d\|\d\|['\"\\ntbrf]\|u\x\{4\}\)"
 
 " String interpolation expression
-syn region boxlangInterpolation contained matchgroup=boxlangInterpolationDelim start="#" end="#" skip="##" contains=boxlangIdentifier,boxlangNumber,boxlangOperator,boxlangMethodCall
+syn region boxlangInterpolation contained matchgroup=boxlangInterpolationDelim start="#" end="#" skip="##" contains=boxlangIdentifier,boxlangNumber,boxlangOperator,boxlangMethodCall,boxlangRangeOp,boxlangSpreadOp
 
 " Single-quoted string
 syn region boxlangStringSingle matchgroup=boxlangStringDelim start=+'+ skip=+''+ end=+'+ contains=boxlangInterpolation,boxlangSpecialChar
@@ -234,9 +237,42 @@ syn match boxlangDot "\."
 syn match boxlangColon ":"
 " / PUNCTUATION }}}
 
+" RANGE AND SPREAD OPERATORS {{{
+" These must be declared after boxlangDot and the plain > comparison operator
+" above: when multiple matches start at the same position, Vim gives priority
+" to whichever "syn match" was declared last, not to the longest match.
+" Declaring the longer, more specific patterns last (and the plain ".." range
+" before its "..<" / "..." extensions) makes them win where it matters.
+
+" Range operators: 1..5, 1..<5, 1>..5, 1>..<5, 1.., ..5
+syn match boxlangRangeOp "\v\.\."
+syn match boxlangRangeOp "\v\.\.\<"
+syn match boxlangRangeOp "\v\>\.\."
+syn match boxlangRangeOp "\v\>\.\.\<"
+
+" Spread / rest operator: [a, ...rest], func(...args), {a, ...rest} = obj
+syn match boxlangSpreadOp "\v\.\.\."
+" / RANGE AND SPREAD OPERATORS }}}
+
 " IDENTIFIERS {{{
 syn match boxlangIdentifier "\<\w\+\>"
 " / IDENTIFIERS }}}
+
+" "Set" the Java type is matched here (after boxlangIdentifier, before the
+" set{...} literal below) so it still highlights as a type everywhere except
+" immediately before '{', where the soft keyword below takes over.
+syn match boxlangJavaType "\<Set\>"
+
+" SOFT KEYWORDS (COLLECTION LITERALS) {{{
+" set{...} and sb{...}/stringbuilder{...} are contextual (soft) keywords: the
+" BoxLang parser (isSetLiteral()/isSBStringLiteral() in BoxParserControl.java)
+" only treats them as literal introducers when immediately followed by '{',
+" so a variable or function named set/sb/stringbuilder still works elsewhere.
+" Declared after boxlangIdentifier so they win only in that specific context.
+syn match boxlangCollectionLiteral "\<set\>\ze\s*{"
+syn match boxlangCollectionLiteral "\<sb\>\ze\s*{"
+syn match boxlangCollectionLiteral "\<stringbuilder\>\ze\s*{"
+" / SOFT KEYWORDS }}}
 
 " SCOPES {{{
 " Core function/class scopes
@@ -300,6 +336,8 @@ hi def link boxlangNull Constant
 hi def link boxlangOperator Operator
 hi def link boxlangBitwiseOp Special
 hi def link boxlangArrow Special
+hi def link boxlangRangeOp Operator
+hi def link boxlangSpreadOp Special
 
 " Comments
 hi def link boxlangLineComment Comment
@@ -351,6 +389,9 @@ hi def link boxlangComma Delimiter
 hi def link boxlangSemicolon Delimiter
 hi def link boxlangDot Operator
 hi def link boxlangColon Operator
+
+" Soft keywords
+hi def link boxlangCollectionLiteral Keyword
 
 " Scopes
 hi def link boxlangScope Type

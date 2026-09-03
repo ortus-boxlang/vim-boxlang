@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Syntax highlighting for range operators (`..`, `..<`, `>..`, `>..<`)
+- Syntax highlighting for the spread/rest operator (`...`) used in array and struct literals, function arguments, and destructuring
+- Syntax highlighting for `set{}` and `sb{}` / `stringbuilder{}` collection literals
+
 ## [1.0.0] - 2026-02-13
 
 - First version of the changelog created.
