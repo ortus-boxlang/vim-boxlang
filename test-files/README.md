@@ -36,6 +36,15 @@ This will:
   - Same as script syntax
   - Can be run directly with BoxLang
 
+- **`test-modern-syntax.bx`** - Newer grammar features test
+  - Range operators (`..`, `..<`, `>..`, `>..<`)
+  - Spread/rest operator (`...`) in arrays, structs, and function calls
+  - Object and array destructuring, including rest bindings
+  - `set{}` / `sb{}` / `stringbuilder{}` collection literals
+  - Two-variable `for (item, index in arr)` / `for (key, value in struct)`
+  - `assert expr : "message"`
+  - Local (in-body) classes
+
 - **`TESTING.md`** - Complete testing guide with detailed instructions
 
 ## Manual Testing

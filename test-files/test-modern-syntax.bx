@@ -1,0 +1,84 @@
+/**
+ * BoxLang Modern Syntax Test
+ * Covers grammar features added since the last syntax sync:
+ * range operators, spread/rest, destructuring, set{}/sb{} literals,
+ * two-variable for-in, assert messages, and local classes.
+ */
+
+function testRanges() {
+    var full = 1..5
+    var rightExclusive = 1..<5
+    var leftExclusive = 1>..5
+    var bothExclusive = 1>..<5
+    var openEnded = 1..
+    var openStart = ..5
+
+    for (i in 1..10) {
+        writeOutput(i)
+    }
+}
+
+function testSpread() {
+    var base = [1, 2, 3]
+    var extended = [0, ...base, 4]
+
+    var baseStruct = {a: 1, b: 2}
+    var mergedStruct = {...baseStruct, c: 3}
+
+    return sum(...extended)
+}
+
+function testDestructuring() {
+    var obj = {name: "John", age: 30, city: "NYC"}
+    var {name, age: userAge, ...rest} = obj
+
+    var arr = [1, 2, 3, 4, 5]
+    var [first, second, ...remaining] = arr
+
+    ({name: variables.name, city: variables.city} = obj)
+    [variables.first, variables.second] = arr
+}
+
+function testCollectionLiterals() {
+    var mySet = set{1, 2, 3}
+    var mySb = sb{"Hello, "}
+    mySb.append("World!")
+
+    var anotherSb = stringbuilder{"initial"}
+
+    // Not literals: no immediate brace
+    var set = "just a variable named set"
+    var sb = "just a variable named sb"
+}
+
+function testTwoVariableForIn() {
+    var arr = ["a", "b", "c"]
+    for (item, index in arr) {
+        writeOutput(index & ": " & item)
+    }
+
+    var struct = {x: 1, y: 2}
+    for (key, value in struct) {
+        writeOutput(key & " = " & value)
+    }
+}
+
+function testAssertMessage() {
+    var result = 42
+    assert result == 42 : "Result should be 42"
+    assert isNumeric(result)
+}
+
+function testLocalClass() {
+    class Inner {
+        property name;
+
+        function getName() {
+            return this.name
+        }
+    }
+
+    var instance = new Inner()
+    instance.name = "local"
+    return instance.getName()
+}
